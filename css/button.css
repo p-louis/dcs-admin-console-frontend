@@ -1,0 +1,95 @@
+a.button {
+    appearance: auto;
+    -webkit-writing-mode: horizontal-tb !important;
+    text-rendering: auto;
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-shadow: none;
+    display: inline-block;
+    text-align: center;
+    align-items: flex-start;
+    cursor: default;
+    box-sizing: border-box;
+    font: 400 13.3333px Arial;
+    font-family: var(--button-font-family);
+    font-size: inherit;
+    background-color: var(--button-background-color);
+    color: var(--button-color);
+    padding: var(--distance-m);
+    font-weight: bold;
+    border-radius: 2px;
+    text-decoration: none;
+    line-height: initial;
+    border: 0;
+    margin: 0;
+}
+
+a.image-button > i {
+    padding: 2px 2px 2px 2px;
+    margin: 0;
+}
+
+a.button > i {
+    padding: 2px 2px 2px 2px;
+}
+
+.button {
+    font-family: var(--button-font-family);
+    font-size: inherit;
+    background-color: var(--button-background-color);
+    color: var(--button-color);
+    border: 0;
+    padding: var(--distance-m);
+    font-weight: bold;
+    border-radius: 2px;
+    text-decoration: none;
+    line-height: initial;
+}
+
+.button:hover {
+    background-color: var(--link-hover-color);
+    color: var(--button-color);
+    cursor: pointer;
+}
+
+.button:disabled {
+    background-color: var(--disabled-background-color);
+    color: var(--disabled-color);
+}
+
+.button:disabled:hover {
+    cursor: initial;
+}
+
+.button-secondary {
+    background-color: initial;
+    padding: var(--distance-s);
+    border: 2px solid var(--button-background-color);
+    color: var(--link-color);
+}
+
+
+.button-secondary:hover {
+    background-color: initial;
+    color: var(--link-hover-color);
+    border: 2px solid var(--link-hover-color);
+}
+
+.button-icon {
+    font-family: var(--button-font-family);
+    font-size: 1.3em;
+    color: var(--button-color);
+    font-weight: bold;
+    text-decoration: none;
+    line-height: initial;
+    padding: 2px 2px 0 2px;
+    border: 2px solid var(--button-background-color);
+    border-radius: 13px;
+    background-color: white !important;
+}
+
+.button-icon:hover {
+    cursor: pointer;
+    color: var(--color-purple-op08) !important;
+}

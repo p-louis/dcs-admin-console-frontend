@@ -1,0 +1,178 @@
+/* SMACSS - Layout Rules
+ * http://smacss.com/book/type-layout
+ */
+
+/* contains the entire app and will always be present */
+#main {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+}
+
+/* contains the area of the app without the banner */
+#content {
+    width: 100%;
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#banner {
+    width: 100%;
+    padding-top: calc(var(--distance-m) + 2px);
+    padding-bottom: var(--distance-m);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    color: var(--color-grey-medium);
+    font-size: 0.9rem;
+    font-weight: bold;
+    background-color: var(--color-navy-op-05);
+}
+
+#banner h1 {
+    margin: 0 0 0 var(--distance-l);
+    font-size: 1.1rem;
+    line-height: 1rem;
+}
+
+#banner .button {
+    font-size: 0.9em;
+}
+
+#banner-brand {
+    min-width: 370px;
+    display: flex;
+    align-items: flex-end;
+    margin-left: 18px;
+}
+
+#banner-logo {
+    width: 117px;
+    height: 25px;
+    margin-top: var(--distance-m);
+    background-image: url(/img/ionity-logo.png);
+    background-repeat: no-repeat;
+    background-position-y: center;
+    background-size: contain;
+}
+
+#banner-menu {
+    padding: var(--distance-m);
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    background-color: var(--color-navy);
+}
+
+.banner-menu-separator {
+    margin: 0 var(--distance-l);
+}
+
+/* for centering the page content if the user is not logged in */
+#gate {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    margin-top: -160px;
+}
+
+#gate .dialog {
+    font-weight: bold;
+    border: 2px groove rgba(112, 34, 131, 0.8);
+    padding: var(--distance-l);
+    background-color: var(--color-navy-op-06);
+    width: 360px;
+}
+
+#gate .dialog-buttons {
+    margin-top: var(--distance-l);
+    margin-bottom: var(--distance-l);
+}
+
+/* represents a page of the app. will be the first element of the content if the user is logged in,
+ * but won't be present if the user is not logged in.
+ */
+#page {
+    display: flex;
+    min-height: 0;
+    width: 100%;
+    height: 100%;
+    flex-direction: row;
+    background-color: rgba(0, 0, 0, 0.76);
+    flex: 1;
+    overflow: auto;
+}
+
+/** a page is potentially split into a menu and a frame */
+#page-menu {
+    padding: 15px 0 var(--distance-m) var(--distance-m);
+    background-color: var(--color-blue-dark);
+    width: 375px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+    border-top-left-radius: 1em;
+    border-bottom-left-radius: 1em;
+    border-left: 3px solid rgba(112, 34, 131, 1);
+    border-top: 3px solid rgba(112, 34, 131, 1);
+    border-bottom: 3px solid rgba(112, 34, 131, 1);
+}
+
+/** a page is potentially split into a menu and a frame */
+#page-frame {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    border-right: 3px solid rgba(112, 34, 131, 1);
+    border-top: 3px solid rgba(112, 34, 131, 1);
+    border-bottom: 3px solid rgba(112, 34, 131, 1);
+    padding: var(--distance-m);
+    padding-bottom: 0;
+    padding-right: 0;
+    background-color: var(--frame-background-color);
+}
+
+#content-frame {
+    display: flex;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    padding: 0.3em 0 0 0.3em;
+    margin-right: 0.5em;
+}
+
+#content-frame > * {
+    border: 0;
+    border-top-left-radius: 0.8em;
+}
+
+/** pages might want to display an iframe */
+#content-frame iframe {
+    flex: 1;
+}
+
+/** if a page displays an iframe, it might not do so in all situations
+  * (e.g. when data is missing, there will be no iframe)
+  */
+#content-frame .iframe-placeholder {
+    flex: 1;
+    height: 100%;
+}
+
+/** the page-frame must properly position the loading indicator within the available space */
+#content-frame .loader {
+    flex: 1;
+    justify-content: center;
+    padding-bottom: 60px;
+}

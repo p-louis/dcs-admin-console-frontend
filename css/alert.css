@@ -1,0 +1,18 @@
+.alert {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: bold;
+    padding: var(--distance-m) var(--distance-m) calc(var(--distance-m) + 2px) var(--distance-m);
+    margin: 0 var(--distance-l) var(--distance-l) var(--distance-l);
+}
+
+.alert-attention {
+    color: var(--alert-attention-color);
+    background-color: var(--attention-background-color);
+    border: 2px solid var(--alert-attention-border-color);
+}
+
+.alert-title {
+    text-transform: uppercase;
+}

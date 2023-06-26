@@ -1,0 +1,3 @@
+#!/bin/bash
+
+elm-live ./src/Main.elm -v -h localhost --proxy-prefix=/api --proxy-host=http://localhost:8080/api -s index.html -- --output ./main.js

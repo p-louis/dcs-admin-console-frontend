@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Main</title>
+    <link type="image/png" rel="icon" href="/img/favicon.png">
+    <link type="text/css" rel="stylesheet" href="/css/base.css">
+    <link type="text/css" rel="stylesheet" href="/css/alert.css">
+    <link type="text/css" rel="stylesheet" href="/css/util.css">
+    <link type="text/css" rel="stylesheet" href="/css/button.css">
+    <link type="text/css" rel="stylesheet" href="/css/form.css">
+    <link type="text/css" rel="stylesheet" href="/css/loader.css">
+    <script src="main.js"></script>
+</head>
+<body>
+<div id="main"></div>
+<script type="text/javascript">
+    const storageKey = "session_store";
+    const flags = localStorage.getItem(storageKey);
+    const app = Elm.Main.init({
+        node: document.getElementById("main"),
+        flags: flags
+    });
+
+    app.ports.storeCache.subscribe(function (val) {
+        if (val === null) {
+            localStorage.removeItem(storageKey);
+        } else {
+            localStorage.setItem(storageKey, JSON.stringify(val));
+        }
+
+        // Report that the new session was stored successfully.
+        setTimeout(function () {
+            app.ports.onStoreChange.send(val);
+        }, 0);
+    });
+
+    app.ports.scrollToItem.subscribe(function (key) {
+        if (key != null) {
+            document.getElementById(key).scrollIntoView(false);
+        }
+    });
+
+    app.ports.reloadFrame.subscribe(function (id) {
+        const iframe = document.getElementById(id);
+        if (iframe != null) {
+            // JavaScript trick ahead
+            // reload of iframe is blocked due to cross origin
+            // but we can outsmart the browser, as reassigning the src causes the iframe to reload
+            // noinspection SillyAssignmentJS
+            iframe.src = iframe.src;
+        }
+    });
+
+    // Whenever localStorage changes in another tab, report it if necessary.
+    window.addEventListener("storage", function (event) {
+        if (event.storageArea === localStorage && event.key === storageKey) {
+            app.ports.onStoreChange.send(event.newValue);
+        }
+    }, false);
+</script>
+</body>
+</html>

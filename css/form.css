@@ -1,0 +1,54 @@
+.form-icon-and-field {
+    display: flex;
+    align-items: baseline;
+    margin-right: var(--distance-m);
+}
+
+.form-icon-and-field-icon {
+    width: 24px;
+    margin-right: var(--distance-m);
+    text-align: center;
+    font-size: 16px;
+}
+
+.form-field-label {
+    display: block;
+    margin-bottom: var(--distance-m);
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.form-field-description {
+    display: block;
+    margin-top: var(--distance-m);
+    margin-left: var(--distance-m);
+    color: var(--color-grey-medium);
+    text-align: right;
+}
+
+.form-field-input-container {
+    display: flex;
+    padding: 4px 6px;
+    background-color: var(--color-navy-dark);
+    border: 2px solid var(--color-grey-dark);
+    transition: background-color 0.2s ease-in-out 0s, border-color 0.2s ease-in-out 0s;
+}
+
+.form-field-input-container:hover, .form-field-input-container:focus-within {
+    border-color: var(--color-white-pure);
+    background-color: var(--color-navy-light);
+}
+
+.form-field-input-container-error {
+    border-color: var(--error-color);
+    transition: none;
+}
+
+.form-field-input-container-error:hover, .form-field-input-container-error:focus-within {
+    border-color: var(--error-color);
+}
+
+.form-field-mandatory:after {
+    content: '*';
+    color: var(--error-color);
+}

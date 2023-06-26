@@ -1,0 +1,374 @@
+/* SMACSS - Base Rules
+ * http://smacss.com/book/type-base
+ */
+
+:root {
+    /* ---------------------------------------------------------------------------------------------
+     * CI COLORS
+     * ---------------------------------------------------------------------------------------------
+     * Use the variants with reduced opacity in order to control how much focus / attention /
+     * intensity you want to give a certain element or area of the page
+     * ---------------------------------------------------------------------------------------------
+     */
+
+    /** GREY LIGHT
+      * Usage: Default font color;
+      *        it is less straining to read when compared to pure white
+      */
+    --color-grey-light: #eee;
+    --window-color: var(--color-grey-light);
+
+    /** GREY MEDIUM
+      * Usage: Font color for places where you want to direct less attention to
+      *        Also used as background color for disabled elements (e.g. disabled buttons)
+      */
+    --color-grey-medium: #ccc;
+    --disabled-background-color: var(--color-grey-medium);
+
+    /** GREY DARK
+      * Usage: Alternative border color (e.g. input field borders)
+      */
+    --color-grey-dark: #bbb;
+
+    /** GREY DARKEST
+      * Usage: Font color for disabled elements
+      */
+    --color-grey-darkest: #666;
+    --disabled-color: var(--color-grey-darkest);
+
+    /** WHITE (PURE)
+      * Usage: Font color for places that you want direct a lot of attention to
+      *        Also acts as border color for focused / hovered input fields
+      */
+    --color-white-pure: white;
+
+    /** NAVY
+      * Usage: The basis for the entire page and acts as overall background color
+      */
+    --color-navy: rgb(0, 0, 50);
+    --color-navy-op-09: rgba(0, 0, 50, 0.9);
+    --color-navy-op-08: rgba(0, 0, 50, 0.8);
+    --color-navy-op-07: rgba(0, 0, 50, 0.7);
+    --color-navy-op-06: rgba(0, 0, 50, 0.6);
+    --color-navy-op-05: rgba(0, 0, 50, 0.5);
+    --color-navy-op-04: rgba(0, 0, 50, 0.4);
+    --color-navy-op-03: rgba(0, 0, 50, 0.3);
+    --color-navy-op-02: rgba(0, 0, 50, 0.2);
+    --color-navy-op-01: rgba(0, 0, 50, 0.1);
+    --window-background-color: var(--color-navy-dark);
+    --button-color: var(--color-navy);
+
+    /** NAVY DARK
+      * Usage: For input field background color, that will hover better with NAVY LIGHT when compared to the normal NAVY
+      */
+    --color-navy-dark: rgb(0, 0, 37);
+    --color-navy-dark-op-09: rgba(0, 0, 37, 0.9);
+    --color-navy-dark-op-08: rgba(0, 0, 37, 0.8);
+    --color-navy-dark-op-07: rgba(0, 0, 37, 0.7);
+    --color-navy-dark-op-06: rgba(0, 0, 37, 0.6);
+    --color-navy-dark-op-05: rgba(0, 0, 37, 0.5);
+    --color-navy-dark-op-04: rgba(0, 0, 37, 0.4);
+    --color-navy-dark-op-03: rgba(0, 0, 37, 0.3);
+    --color-navy-dark-op-02: rgba(0, 0, 37, 0.2);
+    --color-navy-dark-op-01: rgba(0, 0, 37, 0.1);
+
+    /** NAVY LIGHT
+      * Usage: To create hover effects on top of NAVY DARK
+      */
+    --color-navy-light: rgb(0, 0, 70);
+    --color-navy-light-op-09: rgba(0, 0, 70, 0.9);
+    --color-navy-light-op-08: rgba(0, 0, 70, 0.8);
+    --color-navy-light-op-07: rgba(0, 0, 70, 0.7);
+    --color-navy-light-op-06: rgba(0, 0, 70, 0.6);
+    --color-navy-light-op-05: rgba(0, 0, 70, 0.5);
+    --color-navy-light-op-04: rgba(0, 0, 70, 0.4);
+    --color-navy-light-op-03: rgba(0, 0, 70, 0.3);
+    --color-navy-light-op-02: rgba(0, 0, 70, 0.2);
+    --color-navy-light-op-01: rgba(0, 0, 70, 0.1);
+
+    /** PURPLE
+      * Usage: for borders to create the overall structure of the app
+      */
+    --color-purple: rgb(112, 34, 131);
+    --color-purple-op09: rgba(112, 34, 131, 0.9);
+    --color-purple-op08: rgba(112, 34, 131, 0.8);
+    --color-purple-op07: rgba(112, 34, 131, 0.7);
+    --color-purple-op06: rgba(112, 34, 131, 0.6);
+    --color-purple-op05: rgba(112, 34, 131, 0.5);
+    --color-purple-op04: rgba(112, 34, 131, 0.4);
+    --color-purple-op03: rgba(112, 34, 131, 0.3);
+    --color-purple-op02: rgba(112, 34, 131, 0.2);
+    --color-purple-op01: rgba(112, 34, 131, 0.1);
+    --window-border-color: var(--color-purple-op08);
+
+    /** BLUE
+      * Usage: to create separators between different areas of the page
+      */
+    --frame-background-color: var(--color-blue-lighter);
+    --color-blue-light: #5e649a;
+    --color-grey-blue-midpoint: #666A93;
+    --color-grey-blue-dark: #4d506b;
+    --color-blue-lighter: #7e84ba;
+
+    --color-blue: rgb(49, 39, 131);
+    --color-blue-op09: rgba(49, 39, 131, 0.9);
+    --color-blue-op08: rgba(49, 39, 131, 0.8);
+    --color-blue-op07: rgba(49, 39, 131, 0.7);
+    --color-blue-op06: rgba(49, 39, 131, 0.6);
+    --color-blue-op05: rgba(49, 39, 131, 0.5);
+    --color-blue-op04: rgba(49, 39, 131, 0.4);
+    --color-blue-op03: rgba(49, 39, 131, 0.3);
+    --color-blue-op02: rgba(49, 39, 131, 0.2);
+    --color-blue-op01: rgba(49, 39, 131, 0.1);
+
+    --color-blue-dark: rgb(25, 20, 65);
+    --color-blue-dark-op09: rgba(25, 20, 65, 0.9);
+    --color-blue-dark-op08: rgba(25, 20, 65, 0.8);
+    --color-blue-dark-op07: rgba(25, 20, 65, 0.7);
+    --color-blue-dark-op06: rgba(25, 20, 65, 0.6);
+    --color-blue-dark-op05: rgba(25, 20, 65, 0.5);
+    --color-blue-dark-op04: rgba(25, 20, 65, 0.4);
+    --color-blue-dark-op03: rgba(25, 20, 65, 0.3);
+    --color-blue-dark-op02: rgba(25, 20, 65, 0.2);
+    --color-blue-dark-op01: rgba(25, 20, 65, 0.1);
+
+    /** GREEN
+     */
+    --color-green-dark: rgb(20,65,39);
+
+    /** RED
+      * Usage: Exclusively as background color for error messages;
+      *        it is a less intimidating variant than pure red and is part of the official IONITY CI color palette
+      */
+    --color-red-dark: rgb(65,20,48);
+
+    --color-red: rgb(200, 0, 75);
+    --color-red-op09: rgba(200, 0, 75, 0.9);
+    --color-red-op08: rgba(200, 0, 75, 0.8);
+    --color-red-op07: rgba(200, 0, 75, 0.7);
+    --color-red-op06: rgba(200, 0, 75, 0.6);
+    --color-red-op05: rgba(200, 0, 75, 0.5);
+    --color-red-op04: rgba(200, 0, 75, 0.4);
+    --color-red-op03: rgba(200, 0, 75, 0.3);
+    --color-red-op02: rgba(200, 0, 75, 0.2);
+    --color-red-op01: rgba(200, 0, 75, 0.1);
+    --attention-background-color: var(--color-red-op04);
+
+    /** PINK
+      * Usage: As accent color, no reduced opacity should be needed
+      *        Example use: loading indicators
+      */
+    --color-pink: rgb(255, 0, 115);
+    --accent-color: var(--color-pink);
+    --loader-color: var(--accent-color);
+
+    /** ORANGE
+      * Usage: Links and buttons use this color;
+      *       it should not be used elsewhere as the color indicates to the user that the element can be clicked.
+      */
+    --color-orange: rgb(255, 160, 0);
+    --color-orange-op09: rgba(255, 160, 0, 0.9);
+    --link-color: var(--color-orange-op09);
+    --button-background-color: var(--link-color);
+
+    /** ORANGE LIGHT
+      * Usage: Links and buttons use this color as hover color;
+      *        it should not be used elsewhere as the color indicates to the user that the element can be clicked.
+      */
+    --color-orange-light: rgb(255, 198, 38);
+    --color-orange-light-op09: rgba(255, 198, 38, 0.9);
+    --link-hover-color: var(--color-orange-light-op09);
+
+    /** RED (PURE)
+      * Usage: Exclusively as error message font color
+      */
+    --color-red-pure: red;
+    --error-color: red;
+
+    /** YELLOW (PURE)
+      * Usage: Exclusively as font color and border color for alerts
+     */
+    --color-yellow-pure: yellow;
+    --alert-attention-color: var(--color-yellow-pure);
+    --alert-attention-border-color: var(--color-yellow-pure);
+
+    /** Placeholders within input elements need a special color mix of grey and blue to look good */
+    --placeholder-color: #7a869a;
+
+    /* ---------------------------------------------------------------------------------------------
+     * MARGIN & PADDING
+     * ---------------------------------------------------------------------------------------------
+     * - Standardized values provide consistency for distances between elements
+     * - However, it is sometimes necessary to use a custom value for the distance;
+     *   not all proper distances between elements can be derived from these standard values
+     *   (trust your eye, if it does not look good, use a custom value for your element)
+     * ---------------------------------------------------------------------------------------------
+     */
+    --distance-s: 3px;
+    --distance-m: 5px;
+    --distance-l: calc(var(--distance-m) * 2);
+    --distance-xl: calc(var(--distance-m) * 4);
+
+    /* ---------------------------------------------------------------------------------------------
+     * FONT
+     * ---------------------------------------------------------------------------------------------
+     * Resize the font for you element as necessary. When doing so, use a relative value (em or rem)
+     * - em to resize the font relative to the parent
+     * - rem to resize the font relative to the base font size
+     * ---------------------------------------------------------------------------------------------
+     */
+    --window-font-family: "Foco", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --window-font-size: 11pt;
+    --button-font-family: 'Arial', sans-serif;
+}
+
+html {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+body {
+    width: calc(100% - var(--distance-xl));
+    background-position: left;
+    background-size: cover;
+    background-color: var(--window-background-color);
+    background-repeat: no-repeat;
+    color: var(--window-color);
+    font-family: var(--window-font-family);
+    font-size: var(--window-font-size);
+    flex: 1;
+    margin: 0 var(--distance-m) var(--distance-m) var(--distance-m);
+    padding: 0;
+    min-height: 0;
+    line-height: 1.5;
+}
+
+input {
+    background-color: transparent;
+    border: 0;
+    outline: none;
+    color: inherit;
+    width: 100%;
+    height: 1.4em;
+    line-height: 1.4;
+    font-size: 1em;
+    font-weight: bold;
+    box-sizing: border-box;
+    font-family: 'Arial', sans-serif;
+    padding-left: var(--distance-m);
+    padding-right: var(--distance-m);
+}
+
+a {
+    font-weight: bold;
+    text-decoration: none;
+    color: var(--link-color);
+}
+
+a:hover {
+    color: var(--link-hover-color);
+}
+
+input::placeholder {
+    color: var(--placeholder-color);
+    opacity: 1;
+}
+
+h2 {
+    font-size: 1.25rem;
+    line-height: initial;
+}
+
+h3 {
+    margin: 0;
+}
+
+fieldset {
+    border: 1px solid var(--color-grey-medium);
+    padding: var(--distance-m) 12px var(--distance-m) 12px;
+}
+
+fieldset > * {
+    margin-bottom: var(--distance-m);
+}
+
+fieldset legend {
+    text-transform: uppercase;
+}
+
+ul {
+    line-height: 1.3rem;
+}
+
+table {
+    width: 100%;
+    max-width: 900px;
+    border-spacing: 0;
+    margin-top: var(--distance-xl);
+    margin-bottom: var(--distance-xl);
+    border-collapse: collapse;
+}
+
+tr {
+    background-color: var(--color-blue-op02);
+    border-top: 1px solid var(--color-purple-op05);
+}
+
+th {
+    background-color: var(--color-purple-op04);
+    border-top: 2px solid var(--color-purple);
+    border-bottom: 2px solid var(--color-purple);
+    padding: var(--distance-m);
+    text-align: left;
+    text-transform: uppercase;
+}
+
+th[scope="row"] {
+    background-color: var(--window-background-color);
+    border-top: 1px solid var(--color-purple-op03);
+    border-bottom: 1px solid var(--color-purple-op03);
+    padding: var(--distance-m);
+    text-align: left;
+}
+
+table table {
+    background-color: inherit;
+    margin: var(--distance-m) 0;
+}
+
+table table th {
+    border: 0;
+    background-color: initial;
+    text-transform: initial;
+}
+
+table table tr {
+    border-top: 1px solid var(--color-purple-op03);
+}
+
+i {
+    margin-right: .5em;
+}
+
+a > i {
+    margin-right: 0;
+}
+/** Without these, scrollbars will look horrible on some browsers */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgb(200, 94, 49);
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:active {
+    background-color: rgb(234, 114, 69);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(234, 114, 69);
+}
