@@ -41,6 +41,7 @@ type alias Model =
   , file: Selection
   , missions: Status (List FileName)
   , tacViews: Status (List FileName)
+  , currenMission: Status FileName
   }
 
 
@@ -51,6 +52,7 @@ type UploadMsg
     | ClickedUpload File
     | GotUploadResult (Result Http.Error ())
     | GotMissionResult (Result Http.Error (List FileName))
+    | GotCurrentMissionResult (Result Http.Error FileName)
     | GotTacViewResult (Result Http.Error (List FileName))
 
 
@@ -64,16 +66,22 @@ init session =
   , file = None
   , missions = Loading
   , tacViews = Loading
+  , currenMission = Loading
   }
   , Cmd.batch
     [ refreshMissions session
     , refreshTacViews session
+    , refreshMission session
     ]
   )
 
 refreshMissions : Session -> Cmd UploadMsg
 refreshMissions session =
   Api.getSecure (sessUser session) Endpoint.mission GotMissionResult (Decode.list filenameDecoder)
+
+refreshMission : Session -> Cmd UploadMsg
+refreshMission session =
+  Api.getSecure (sessUser session) Endpoint.currentMission GotCurrentMissionResult filenameDecoder
 
 refreshTacViews : Session -> Cmd UploadMsg
 refreshTacViews session =
@@ -133,6 +141,15 @@ update msg model =
             )
 
           Err err -> ( { model | tacViews = LoadError (errToString err) }, Cmd.none)
+
+      GotCurrentMissionResult result ->
+        case result of
+          Ok name ->
+            ( { model | currenMission = Loaded name }
+            , Cmd.none
+            )
+
+          Err err -> ( { model | currenMission = LoadError (errToString err) }, Cmd.none)
 
 
 
@@ -217,6 +234,19 @@ view model =
                 [ text "Download Liberation Status"
                 ]
               ]
+            ]
+          , div [ id "current-mission" ]
+            [ h3 [] [ text "Current Mission" ]
+            , div []
+              <| case model.currenMission of
+                Loading ->
+                  [ viewLoadingWithMsg "Loading Current Mission" ]
+
+                Loaded mis ->
+                  [ text mis.filename ]
+
+                LoadError err ->
+                  [ div [] [ text err ] ]
             ]
           , div [ id "mission-list" ]
             [ h3 [] [text "Existing Missions"]

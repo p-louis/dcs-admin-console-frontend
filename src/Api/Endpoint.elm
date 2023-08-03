@@ -96,6 +96,10 @@ mission : Endpoint
 mission =
     url [ "admin", "mission" ] []
 
+currentMission : Endpoint
+currentMission =
+    url [ "admin", "mission", "current" ] []
+
 tacview : Endpoint
 tacview =
     url [ "admin", "tacview" ] []
