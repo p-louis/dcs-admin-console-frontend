@@ -8085,11 +8085,12 @@ var $author$project$Pages$Upload$viewMission = function (miz) {
 		_List_fromArray(
 			[
 				A2(
-				$elm$html$Html$a,
+				$elm$html$Html$button,
 				_List_fromArray(
 					[
 						$elm$html$Html$Events$onClick(
-						$author$project$Pages$Upload$ClickedRun(miz.filename))
+						$author$project$Pages$Upload$ClickedRun(miz.filename)),
+						$elm$html$Html$Attributes$class('button')
 					]),
 				_List_fromArray(
 					[

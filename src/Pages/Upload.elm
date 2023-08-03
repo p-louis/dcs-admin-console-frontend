@@ -298,8 +298,9 @@ view model =
 viewMission : FileName -> Html UploadMsg
 viewMission miz =
   div []
-    [ a
+    [ button
       [ onClick (ClickedRun miz.filename)
+      , class "button"
       ]
       [ text miz.filename ]
     ]
