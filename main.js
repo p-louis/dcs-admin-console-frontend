@@ -5665,9 +5665,46 @@ var $author$project$Pages$Login$init = function (session) {
 };
 var $author$project$Pages$Upload$Loading = {$: 'Loading'};
 var $author$project$Pages$Upload$None = {$: 'None'};
-var $author$project$Pages$Upload$GotMissionResult = function (a) {
-	return {$: 'GotMissionResult', a: a};
+var $author$project$Pages$Upload$GotCurrentMissionResult = function (a) {
+	return {$: 'GotCurrentMissionResult', a: a};
 };
+var $author$project$Api$Endpoint$Endpoint = function (a) {
+	return {$: 'Endpoint', a: a};
+};
+var $elm$url$Url$Builder$toQueryPair = function (_v0) {
+	var key = _v0.a;
+	var value = _v0.b;
+	return key + ('=' + value);
+};
+var $elm$url$Url$Builder$toQuery = function (parameters) {
+	if (!parameters.b) {
+		return '';
+	} else {
+		return '?' + A2(
+			$elm$core$String$join,
+			'&',
+			A2($elm$core$List$map, $elm$url$Url$Builder$toQueryPair, parameters));
+	}
+};
+var $elm$url$Url$Builder$relative = F2(
+	function (pathSegments, parameters) {
+		return _Utils_ap(
+			A2($elm$core$String$join, '/', pathSegments),
+			$elm$url$Url$Builder$toQuery(parameters));
+	});
+var $author$project$Api$Endpoint$url = F2(
+	function (paths, queryParams) {
+		return $author$project$Api$Endpoint$Endpoint(
+			A2(
+				$elm$url$Url$Builder$relative,
+				A2($elm$core$List$cons, 'api', paths),
+				queryParams));
+	});
+var $author$project$Api$Endpoint$currentMission = A2(
+	$author$project$Api$Endpoint$url,
+	_List_fromArray(
+		['admin', 'mission', 'current']),
+	_List_Nil);
 var $author$project$Pages$Upload$FileName = function (filename) {
 	return {filename: filename};
 };
@@ -6515,44 +6552,6 @@ var $author$project$Api$getSecure = F4(
 				withCredentials: false
 			});
 	});
-var $elm$json$Json$Decode$list = _Json_decodeList;
-var $author$project$Api$Endpoint$Endpoint = function (a) {
-	return {$: 'Endpoint', a: a};
-};
-var $elm$url$Url$Builder$toQueryPair = function (_v0) {
-	var key = _v0.a;
-	var value = _v0.b;
-	return key + ('=' + value);
-};
-var $elm$url$Url$Builder$toQuery = function (parameters) {
-	if (!parameters.b) {
-		return '';
-	} else {
-		return '?' + A2(
-			$elm$core$String$join,
-			'&',
-			A2($elm$core$List$map, $elm$url$Url$Builder$toQueryPair, parameters));
-	}
-};
-var $elm$url$Url$Builder$relative = F2(
-	function (pathSegments, parameters) {
-		return _Utils_ap(
-			A2($elm$core$String$join, '/', pathSegments),
-			$elm$url$Url$Builder$toQuery(parameters));
-	});
-var $author$project$Api$Endpoint$url = F2(
-	function (paths, queryParams) {
-		return $author$project$Api$Endpoint$Endpoint(
-			A2(
-				$elm$url$Url$Builder$relative,
-				A2($elm$core$List$cons, 'api', paths),
-				queryParams));
-	});
-var $author$project$Api$Endpoint$mission = A2(
-	$author$project$Api$Endpoint$url,
-	_List_fromArray(
-		['admin', 'mission']),
-	_List_Nil);
 var $author$project$Pages$Upload$sessUser = function (session) {
 	if (session.$ === 'Guest') {
 		return {token: ''};
@@ -6561,6 +6560,23 @@ var $author$project$Pages$Upload$sessUser = function (session) {
 		return user;
 	}
 };
+var $author$project$Pages$Upload$refreshMission = function (session) {
+	return A4(
+		$author$project$Api$getSecure,
+		$author$project$Pages$Upload$sessUser(session),
+		$author$project$Api$Endpoint$currentMission,
+		$author$project$Pages$Upload$GotCurrentMissionResult,
+		$author$project$Pages$Upload$filenameDecoder);
+};
+var $author$project$Pages$Upload$GotMissionResult = function (a) {
+	return {$: 'GotMissionResult', a: a};
+};
+var $elm$json$Json$Decode$list = _Json_decodeList;
+var $author$project$Api$Endpoint$mission = A2(
+	$author$project$Api$Endpoint$url,
+	_List_fromArray(
+		['admin', 'mission']),
+	_List_Nil);
 var $author$project$Pages$Upload$refreshMissions = function (session) {
 	return A4(
 		$author$project$Api$getSecure,
@@ -6587,12 +6603,13 @@ var $author$project$Pages$Upload$refreshTacViews = function (session) {
 };
 var $author$project$Pages$Upload$init = function (session) {
 	return _Utils_Tuple2(
-		{file: $author$project$Pages$Upload$None, missions: $author$project$Pages$Upload$Loading, session: session, tacViews: $author$project$Pages$Upload$Loading},
+		{currenMission: $author$project$Pages$Upload$Loading, file: $author$project$Pages$Upload$None, missions: $author$project$Pages$Upload$Loading, session: session, tacViews: $author$project$Pages$Upload$Loading},
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
 				[
 					$author$project$Pages$Upload$refreshMissions(session),
-					$author$project$Pages$Upload$refreshTacViews(session)
+					$author$project$Pages$Upload$refreshTacViews(session),
+					$author$project$Pages$Upload$refreshMission(session)
 				])));
 };
 var $elm$browser$Browser$Navigation$load = _Browser_load;
@@ -7512,7 +7529,7 @@ var $author$project$Pages$Upload$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			default:
+			case 'GotTacViewResult':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
 					var list = result.a;
@@ -7530,6 +7547,28 @@ var $author$project$Pages$Upload$update = F2(
 							model,
 							{
 								tacViews: $author$project$Pages$Upload$LoadError(
+									$author$project$Util$errToString(err))
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+			default:
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var name = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								currenMission: $author$project$Pages$Upload$Loaded(name)
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var err = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								currenMission: $author$project$Pages$Upload$LoadError(
 									$author$project$Util$errToString(err))
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -8043,8 +8082,8 @@ var $author$project$Pages$Upload$viewTacView = function (tv) {
 };
 var $author$project$Pages$Upload$view = function (model) {
 	var errorCss = function () {
-		var _v5 = model.file;
-		if (_v5.$ === 'Error') {
+		var _v6 = model.file;
+		if (_v6.$ === 'Error') {
 			return ' form-field-input-container-error';
 		} else {
 			return '';
@@ -8277,6 +8316,53 @@ var $author$project$Pages$Upload$view = function (model) {
 				$elm$html$Html$div,
 				_List_fromArray(
 					[
+						$elm$html$Html$Attributes$id('current-mission')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h3,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Current Mission')
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						function () {
+							var _v3 = model.currenMission;
+							switch (_v3.$) {
+								case 'Loading':
+									return _List_fromArray(
+										[
+											$author$project$Util$viewLoadingWithMsg('Loading Current Mission')
+										]);
+								case 'Loaded':
+									var mis = _v3.a;
+									return _List_fromArray(
+										[
+											$elm$html$Html$text(mis.filename)
+										]);
+								default:
+									var err = _v3.a;
+									return _List_fromArray(
+										[
+											A2(
+											$elm$html$Html$div,
+											_List_Nil,
+											_List_fromArray(
+												[
+													$elm$html$Html$text(err)
+												]))
+										]);
+							}
+						}())
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
 						$elm$html$Html$Attributes$id('mission-list')
 					]),
 				_List_fromArray(
@@ -8292,18 +8378,18 @@ var $author$project$Pages$Upload$view = function (model) {
 						$elm$html$Html$div,
 						_List_Nil,
 						function () {
-							var _v3 = model.missions;
-							switch (_v3.$) {
+							var _v4 = model.missions;
+							switch (_v4.$) {
 								case 'Loading':
 									return _List_fromArray(
 										[
 											$author$project$Util$viewLoadingWithMsg('Loading Mission files')
 										]);
 								case 'Loaded':
-									var missions = _v3.a;
+									var missions = _v4.a;
 									return A2($elm$core$List$map, $author$project$Pages$Upload$viewMission, missions);
 								default:
-									var err = _v3.a;
+									var err = _v4.a;
 									return _List_fromArray(
 										[
 											A2(
@@ -8336,18 +8422,18 @@ var $author$project$Pages$Upload$view = function (model) {
 						$elm$html$Html$div,
 						_List_Nil,
 						function () {
-							var _v4 = model.tacViews;
-							switch (_v4.$) {
+							var _v5 = model.tacViews;
+							switch (_v5.$) {
 								case 'Loading':
 									return _List_fromArray(
 										[
 											$author$project$Util$viewLoadingWithMsg('Loading TacView Files')
 										]);
 								case 'Loaded':
-									var tacViews = _v4.a;
+									var tacViews = _v5.a;
 									return A2($elm$core$List$map, $author$project$Pages$Upload$viewTacView, tacViews);
 								default:
-									var err = _v4.a;
+									var err = _v5.a;
 									return _List_fromArray(
 										[
 											A2(
