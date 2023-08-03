@@ -7338,6 +7338,9 @@ var $author$project$Pages$Login$update = F2(
 var $author$project$Pages$Upload$Error = function (a) {
 	return {$: 'Error', a: a};
 };
+var $author$project$Pages$Upload$GotMissionChangeResult = function (a) {
+	return {$: 'GotMissionChangeResult', a: a};
+};
 var $author$project$Pages$Upload$GotUploadResult = function (a) {
 	return {$: 'GotUploadResult', a: a};
 };
@@ -7551,7 +7554,7 @@ var $author$project$Pages$Upload$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			default:
+			case 'GotCurrentMissionResult':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
 					var name = result.a;
@@ -7573,6 +7576,26 @@ var $author$project$Pages$Upload$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
+			case 'ClickedRun':
+				var missionName = msg.a;
+				return _Utils_Tuple2(
+					model,
+					A5(
+						$author$project$Api$postSecureWithErrorBody,
+						$author$project$Pages$Upload$sessionUser(model),
+						$author$project$Api$Endpoint$mission,
+						$author$project$Pages$Upload$GotMissionChangeResult,
+						$elm$http$Http$jsonBody(
+							$elm$json$Json$Encode$object(
+								_List_fromArray(
+									[
+										_Utils_Tuple2(
+										'mission_name',
+										$elm$json$Json$Encode$string(missionName))
+									]))),
+						$elm$json$Json$Decode$succeed(_Utils_Tuple0)));
+			default:
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Util$updateWith = F3(
@@ -8052,13 +8075,26 @@ var $author$project$Util$viewLoadingWithMsg = function (message) {
 					]))
 			]));
 };
+var $author$project$Pages$Upload$ClickedRun = function (a) {
+	return {$: 'ClickedRun', a: a};
+};
 var $author$project$Pages$Upload$viewMission = function (miz) {
 	return A2(
 		$elm$html$Html$div,
 		_List_Nil,
 		_List_fromArray(
 			[
-				$elm$html$Html$text(miz.filename)
+				A2(
+				$elm$html$Html$a,
+				_List_fromArray(
+					[
+						$elm$html$Html$Events$onClick(
+						$author$project$Pages$Upload$ClickedRun(miz.filename))
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text(miz.filename)
+					]))
 			]));
 };
 var $author$project$Pages$Upload$viewTacView = function (tv) {

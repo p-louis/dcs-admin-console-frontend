@@ -6,8 +6,9 @@ import File.Select as Select exposing (file)
 import Html exposing (Html, a, button, div, h3, label, span, text)
 import Html.Attributes exposing (class, for, href, id, style, target)
 import Html.Events exposing (onClick)
-import Http exposing (filePart, multipartBody)
+import Http exposing (filePart, jsonBody, multipartBody)
 import Json.Decode as Decode exposing (Decoder)
+import Json.Encode as Encode exposing (string, object)
 import Session exposing (Session(..))
 import User exposing (User)
 import Util exposing (errToString, viewLoadingWithMsg)
@@ -50,7 +51,9 @@ type UploadMsg
     = UpdateFile File
     | ClickedSelectFile
     | ClickedUpload File
+    | ClickedRun String
     | GotUploadResult (Result Http.Error ())
+    | GotMissionChangeResult (Result Http.Error ())
     | GotMissionResult (Result Http.Error (List FileName))
     | GotCurrentMissionResult (Result Http.Error FileName)
     | GotTacViewResult (Result Http.Error (List FileName))
@@ -150,6 +153,21 @@ update msg model =
             )
 
           Err err -> ( { model | currenMission = LoadError (errToString err) }, Cmd.none)
+
+      ClickedRun missionName ->
+        ( model
+        , Api.postSecureWithErrorBody (sessionUser model) Endpoint.mission GotMissionChangeResult
+          (jsonBody
+              <| Encode.object
+                [ ("mission_name", Encode.string missionName)
+                ]
+
+          ) (Decode.succeed ())
+        )
+
+      GotMissionChangeResult _ ->
+        (model, Cmd.none)
+
 
 
 
@@ -277,10 +295,13 @@ view model =
           ]
     }
 
-viewMission : FileName -> Html msg
+viewMission : FileName -> Html UploadMsg
 viewMission miz =
   div []
-    [ text miz.filename
+    [ a
+      [ onClick (ClickedRun miz.filename)
+      ]
+      [ text miz.filename ]
     ]
 
 viewTacView : FileName -> Html msg
