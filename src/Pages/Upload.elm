@@ -207,6 +207,17 @@ view model =
                         ]
                   ]
             ]
+          , div [ id "liberation" ]
+            [ h3 [] [ text "Liberation Status" ]
+            , div []
+              [ a
+                [ href "/api/liberation/state.json"
+                , target "new"
+                ]
+                [ text "Download Liberation Status"
+                ]
+              ]
+            ]
           , div [ id "mission-list" ]
             [ h3 [] [text "Existing Missions"]
             , div []

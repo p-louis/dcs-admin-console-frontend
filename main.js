@@ -7982,6 +7982,7 @@ var $elm$file$File$name = _File_name;
 var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
+var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty('target');
 var $author$project$Util$viewLoadingWithMsg = function (message) {
 	return A2(
 		$elm$html$Html$div,
@@ -8021,7 +8022,6 @@ var $author$project$Pages$Upload$viewMission = function (miz) {
 				$elm$html$Html$text(miz.filename)
 			]));
 };
-var $elm$html$Html$Attributes$target = $elm$html$Html$Attributes$stringProperty('target');
 var $author$project$Pages$Upload$viewTacView = function (tv) {
 	return A2(
 		$elm$html$Html$div,
@@ -8239,6 +8239,39 @@ var $author$project$Pages$Upload$view = function (model) {
 										]);
 								}
 							}()))
+					])),
+				A2(
+				$elm$html$Html$div,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$id('liberation')
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$elm$html$Html$h3,
+						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$text('Liberation Status')
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$a,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$href('/api/liberation/state.json'),
+										$elm$html$Html$Attributes$target('new')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Download Liberation Status')
+									]))
+							]))
 					])),
 				A2(
 				$elm$html$Html$div,
