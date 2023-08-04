@@ -7378,6 +7378,7 @@ var $author$project$Pages$Upload$LoadError = function (a) {
 var $author$project$Pages$Upload$Loaded = function (a) {
 	return {$: 'Loaded', a: a};
 };
+var $author$project$Pages$Upload$RefreshPause = {$: 'RefreshPause'};
 var $author$project$Pages$Upload$Selected = function (a) {
 	return {$: 'Selected', a: a};
 };
@@ -7385,6 +7386,18 @@ var $author$project$Pages$Upload$Success = {$: 'Success'};
 var $author$project$Pages$Upload$UpdateFile = function (a) {
 	return {$: 'UpdateFile', a: a};
 };
+var $elm$core$Basics$always = F2(
+	function (a, _v0) {
+		return a;
+	});
+var $elm$core$Process$sleep = _Process_sleep;
+var $andrewMacmurray$elm_delay$Delay$after = F2(
+	function (time, msg) {
+		return A2(
+			$elm$core$Task$perform,
+			$elm$core$Basics$always(msg),
+			$elm$core$Process$sleep(time));
+	});
 var $author$project$Util$errToString = function (err) {
 	switch (err.$) {
 		case 'BadUrl':
@@ -7683,6 +7696,10 @@ var $author$project$Pages$Upload$update = F2(
 					var err = result.a;
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
+			case 'GotPauseChangeResult':
+				return _Utils_Tuple2(
+					model,
+					A2($andrewMacmurray$elm_delay$Delay$after, 500, $author$project$Pages$Upload$RefreshPause));
 			default:
 				return _Utils_Tuple2(
 					model,

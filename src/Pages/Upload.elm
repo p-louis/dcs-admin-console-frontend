@@ -1,6 +1,7 @@
 module Pages.Upload exposing (..)
 import Api
 import Api.Endpoint as Endpoint exposing (Endpoint(..))
+import Delay
 import File exposing (File)
 import File.Select as Select exposing (file)
 import Html exposing (Html, a, button, div, h3, label, span, text)
@@ -63,6 +64,7 @@ type UploadMsg
     | ClickedRefreshCurrent
     | ClickedRefreshTac
     | ClickedPause
+    | RefreshPause
     | ClickedRefreshMissions
     | GotUploadResult (Result Http.Error ())
     | GotPauseResult (Result Http.Error Pause)
@@ -226,8 +228,12 @@ update msg model =
 
           Err err -> ( model, Cmd.none)
 
+
       GotPauseChangeResult _ ->
-        ( model, getPause model.session )
+        ( model, Delay.after 500 RefreshPause )
+
+      RefreshPause ->
+        ( model, getPause model.session)
 
 
 -- Subscriptions

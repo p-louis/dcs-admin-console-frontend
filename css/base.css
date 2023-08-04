@@ -188,6 +188,7 @@
     /** YELLOW (PURE)
       * Usage: Exclusively as font color and border color for alerts
      */
+    --color-green-pure: green;
     --color-yellow-pure: yellow;
     --alert-attention-color: var(--color-yellow-pure);
     --alert-attention-border-color: var(--color-yellow-pure);
@@ -253,7 +254,7 @@
 .circle-running {
     height: 25px;
     width: 25px;
-    background-color: var(--color-green-dark);
+    background-color: var(--color-green-pure);
     border-radius: 50%;
     display: inline-block;
 }
