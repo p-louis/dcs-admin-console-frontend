@@ -250,12 +250,15 @@ view model =
         _ -> ""
 
       pauseText = if model.paused then "Unpause" else "Pause"
+      pauseStateText = if model.paused then "Paused" else "Running"
     in
     { title = "Server File Management"
     , body =
         [ div [ id "gate" ]
           [ div [ id "controls"]
-            [ button
+            [ div []
+              [ text pauseStateText ]
+            , button
               [ class "button"
               , onClick ClickedPause
               ]
