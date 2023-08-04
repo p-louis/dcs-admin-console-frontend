@@ -8217,7 +8217,6 @@ var $author$project$Pages$Upload$viewTacView = function (tv) {
 };
 var $author$project$Pages$Upload$view = function (model) {
 	var pauseText = model.paused ? 'Unpause' : 'Pause';
-	var pauseStateText = model.paused ? 'Paused' : 'Running';
 	var errorCss = function () {
 		var _v7 = model.file;
 		if (_v7.$ === 'Error') {
@@ -8235,6 +8234,7 @@ var $author$project$Pages$Upload$view = function (model) {
 			return '';
 		}
 	}();
+	var circle = model.paused ? 'circle-paused' : 'circle-running';
 	return {
 		body: _List_fromArray(
 			[
@@ -8254,13 +8254,6 @@ var $author$project$Pages$Upload$view = function (model) {
 							]),
 						_List_fromArray(
 							[
-								A2(
-								$elm$html$Html$div,
-								_List_Nil,
-								_List_fromArray(
-									[
-										$elm$html$Html$text(pauseStateText)
-									])),
 								A2(
 								$elm$html$Html$button,
 								_List_fromArray(
@@ -8331,7 +8324,23 @@ var $author$project$Pages$Upload$view = function (model) {
 													var mis = _v0.a;
 													return _List_fromArray(
 														[
-															$elm$html$Html$text(mis.filename)
+															A2(
+															$elm$html$Html$div,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('split')
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text(mis.filename),
+																	A2(
+																	$elm$html$Html$span,
+																	_List_fromArray(
+																		[
+																			$elm$html$Html$Attributes$class(circle)
+																		]),
+																	_List_Nil)
+																]))
 														]);
 												default:
 													var err = _v0.a;

@@ -250,15 +250,13 @@ view model =
         _ -> ""
 
       pauseText = if model.paused then "Unpause" else "Pause"
-      pauseStateText = if model.paused then "Paused" else "Running"
+      circle = if model.paused then "circle-paused" else "circle-running"
     in
     { title = "Server File Management"
     , body =
         [ div [ id "gate" ]
           [ div [ id "controls"]
-            [ div []
-              [ text pauseStateText ]
-            , button
+            [ button
               [ class "button"
               , onClick ClickedPause
               ]
@@ -280,7 +278,11 @@ view model =
                     [ viewLoadingWithMsg "Loading Current Mission" ]
 
                   Loaded mis ->
-                    [ text mis.filename ]
+                    [ div [ class "split" ]
+                      [ text mis.filename
+                      , span [ class circle ] []
+                      ]
+                    ]
 
                   LoadError err ->
                     [ div [] [ text err ] ]
