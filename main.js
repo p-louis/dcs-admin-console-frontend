@@ -8216,6 +8216,7 @@ var $author$project$Pages$Upload$viewTacView = function (tv) {
 			]));
 };
 var $author$project$Pages$Upload$view = function (model) {
+	var pauseText = model.paused ? 'Unpause' : 'Pause';
 	var errorCss = function () {
 		var _v7 = model.file;
 		if (_v7.$ === 'Error') {
@@ -8261,7 +8262,7 @@ var $author$project$Pages$Upload$view = function (model) {
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Pause')
+										$elm$html$Html$text(pauseText)
 									]))
 							])),
 						A2(

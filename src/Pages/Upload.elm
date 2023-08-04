@@ -248,6 +248,8 @@ view model =
       currentMission = case model.currentMission of
         Loaded s -> s.filename
         _ -> ""
+
+      pauseText = if model.paused then "Unpause" else "Pause"
     in
     { title = "Server File Management"
     , body =
@@ -257,7 +259,7 @@ view model =
               [ class "button"
               , onClick ClickedPause
               ]
-              [ text "Pause" ]
+              [ text pauseText ]
             ]
           , div [ id "mission-stuff" ]
             [ div [ id "current-mission" ]
