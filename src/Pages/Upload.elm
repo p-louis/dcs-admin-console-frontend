@@ -42,7 +42,7 @@ type alias Model =
   , file: Selection
   , missions: Status (List FileName)
   , tacViews: Status (List FileName)
-  , currenMission: Status FileName
+  , currentMission: Status FileName
   }
 
 
@@ -52,6 +52,9 @@ type UploadMsg
     | ClickedSelectFile
     | ClickedUpload File
     | ClickedRun String
+    | ClickedRefreshCurrent
+    | ClickedRefreshTac
+    | ClickedRefreshMissions
     | GotUploadResult (Result Http.Error ())
     | GotMissionChangeResult (Result Http.Error ())
     | GotMissionResult (Result Http.Error (List FileName))
@@ -69,7 +72,7 @@ init session =
   , file = None
   , missions = Loading
   , tacViews = Loading
-  , currenMission = Loading
+  , currentMission = Loading
   }
   , Cmd.batch
     [ refreshMissions session
@@ -148,11 +151,11 @@ update msg model =
       GotCurrentMissionResult result ->
         case result of
           Ok name ->
-            ( { model | currenMission = Loaded name }
+            ( { model | currentMission = Loaded name }
             , Cmd.none
             )
 
-          Err err -> ( { model | currenMission = LoadError (errToString err) }, Cmd.none)
+          Err err -> ( { model | currentMission = LoadError (errToString err) }, Cmd.none)
 
       ClickedRun missionName ->
         ( model
@@ -167,6 +170,23 @@ update msg model =
 
       GotMissionChangeResult _ ->
         (model, Cmd.none)
+
+      ClickedRefreshCurrent ->
+        ( { model | currentMission = Loading }
+        , refreshMission model.session
+        )
+
+      ClickedRefreshTac ->
+        ( { model | tacViews = Loading }
+        , refreshTacViews model.session
+        )
+
+      ClickedRefreshMissions ->
+        ( { model | missions = Loading }
+        , refreshMissions model.session
+        )
+
+
 
 
 
@@ -187,122 +207,149 @@ view model =
     { title = "Server File Management"
     , body =
         [ div [ id "gate" ]
-          [ div [ id "upload" ]
-            <| h3 [] [ text "Upload Mission File" ]
-              :: case model.file of
-                Uploading file ->
-                  [ viewLoadingWithMsg <| "Uploading " ++ File.name file ]
-                _ ->
-                  [ label [ class "form-field-label", for "form-type" ]
-                      [ span [ class "form-field-mandatory" ] [ text "Select File " ] ]
-                  , div
-                      [ class <| "form-field-input-container" ++ errorCss
-                      , onClick ClickedSelectFile
-                      ]
-                      (
-                          [ button
-                              [ class "button"
-                              ]
-                              [ text "Select File.."
-                              ]
-                          ]
-                          ++
-                          case model.file of
-                              Selected file ->
-                                  [ div [ style "margin-left" "1em" ] [ text <| File.name file ]
-                                  ]
-                              Uploading file ->
-                                  [ div [ style "margin-left" "1em" ] [ text <| File.name file ]
-                                  ]
-                              _ -> []
-                      )
-                  , div [ class "form-field-description" ] [ text "Select the file to upload" ]
-                  , div
-                    []
-                    <| case model.file of
-                      None -> []
-                      Selected file ->
-                        [ button
-                          [ onClick <| ClickedUpload file
-                          , class "button"
-                          ]
-                          [ text "Upload" ]
-                        ]
-                      Uploading file ->
-                        [ viewLoadingWithMsg <| "Uploading file " ++  File.name file
-                        ]
-                      Error error ->
-                        [ div []
-                          [ text "Something went wrong: "
-                          , text error
-                          ]
-                        ]
-                      Success ->
-                        [ div [] [ text "Upload Successful"]
-                        ]
+          [ div [ id "mission-stuff" ]
+            [ div [ id "current-mission" ]
+              [ div [class "split"]
+                [ h3 [] [ text "Current Mission" ]
+                , button
+                  [ class "button button-secondary"
+                  , onClick ClickedRefreshCurrent
                   ]
-            ]
-          , div [ id "liberation" ]
-            [ h3 [] [ text "Liberation Status" ]
-            , div []
-              [ a
-                [ href "/api/liberation/state.json"
-                , target "new"
+                  [ text "Refresh" ]
                 ]
-                [ text "Download Liberation Status"
+              , div []
+                <| case model.currentMission of
+                  Loading ->
+                    [ viewLoadingWithMsg "Loading Current Mission" ]
+
+                  Loaded mis ->
+                    [ text mis.filename ]
+
+                  LoadError err ->
+                    [ div [] [ text err ] ]
+              ]
+            , div [ id "mission-list" ]
+              [ div [ class "split"]
+                [ h3 [] [ text "Existing Missions" ]
+                , button
+                  [ class "button button-secondary"
+                  , onClick ClickedRefreshMissions
+                  ]
+                  [ text "Refresh" ]
+                ]
+              , div []
+                <| case model.missions of
+                  Loading ->
+                    [ viewLoadingWithMsg "Loading Mission files" ]
+
+                  Loaded missions ->
+                    List.map viewMission missions
+
+                  LoadError err ->
+                    [ div [] [ text err ] ]
+              ]
+            , div [ id "upload" ]
+              <| h3 [] [ text "Upload Mission File" ]
+                :: case model.file of
+                  Uploading file ->
+                    [ viewLoadingWithMsg <| "Uploading " ++ File.name file ]
+                  _ ->
+                    [ label [ class "form-field-label", for "form-type" ]
+                        [ span [ class "form-field-mandatory" ] [ text "Select File " ] ]
+                    , div
+                        [ class <| "form-field-input-container" ++ errorCss
+                        , onClick ClickedSelectFile
+                        ]
+                        (
+                            [ button
+                                [ class "button"
+                                ]
+                                [ text "Select File.."
+                                ]
+                            ]
+                            ++
+                            case model.file of
+                                Selected file ->
+                                    [ div [ style "margin-left" "1em" ] [ text <| File.name file ]
+                                    ]
+                                Uploading file ->
+                                    [ div [ style "margin-left" "1em" ] [ text <| File.name file ]
+                                    ]
+                                _ -> []
+                        )
+                    , div [ class "form-field-description" ] [ text "Select the file to upload" ]
+                    , div
+                      []
+                      <| case model.file of
+                        None -> []
+                        Selected file ->
+                          [ button
+                            [ onClick <| ClickedUpload file
+                            , class "button"
+                            ]
+                            [ text "Upload" ]
+                          ]
+                        Uploading file ->
+                          [ viewLoadingWithMsg <| "Uploading file " ++  File.name file
+                          ]
+                        Error error ->
+                          [ div []
+                            [ text "Something went wrong: "
+                            , text error
+                            ]
+                          ]
+                        Success ->
+                          [ div [] [ text "Upload Successful"]
+                          ]
+                    ]
+            ]
+          , div [ id "file-stuff" ]
+            [ div [ id "liberation" ]
+              [ h3 [] [ text "Liberation Status" ]
+              , div []
+                [ a
+                  [ href "/api/liberation/state.json"
+                  , target "new"
+                  ]
+                  [ text "Download Liberation Status"
+                  ]
                 ]
               ]
-            ]
-          , div [ id "current-mission" ]
-            [ h3 [] [ text "Current Mission" ]
-            , div []
-              <| case model.currenMission of
-                Loading ->
-                  [ viewLoadingWithMsg "Loading Current Mission" ]
+            , div [ id "tac-view-list" ]
+              [ div [class "split"]
+                [ h3 [] [ text "TacView Files" ]
+                , button
+                  [ class "button button-secondary"
+                  , onClick ClickedRefreshTac
+                  ]
+                  [ text "Refresh" ]
+                ]
 
-                Loaded mis ->
-                  [ text mis.filename ]
+              , div []
+                <| case model.tacViews of
+                  Loading ->
+                    [ viewLoadingWithMsg "Loading TacView Files" ]
 
-                LoadError err ->
-                  [ div [] [ text err ] ]
-            ]
-          , div [ id "mission-list" ]
-            [ h3 [] [text "Existing Missions"]
-            , div []
-              <| case model.missions of
-                Loading ->
-                  [ viewLoadingWithMsg "Loading Mission files" ]
+                  Loaded tacViews ->
+                    List.map viewTacView (List.reverse tacViews)
 
-                Loaded missions ->
-                  List.map viewMission missions
-
-                LoadError err ->
-                  [ div [] [ text err ] ]
-            ]
-          , div [ id "tac-view-list" ]
-            [ h3 [] [text "Existing TacView Files"]
-            , div []
-              <| case model.tacViews of
-                Loading ->
-                  [ viewLoadingWithMsg "Loading TacView Files" ]
-
-                Loaded tacViews ->
-                  List.map viewTacView tacViews
-
-                LoadError err ->
-                  [ div [] [ text err ] ]
+                  LoadError err ->
+                    [ div [] [ text err ] ]
             ]
           ]
+        ]
+      ]
     }
 
 viewMission : FileName -> Html UploadMsg
 viewMission miz =
-  div []
-    [ button
+  div [ class "split" ]
+    [ text miz.filename
+    , button
       [ onClick (ClickedRun miz.filename)
-      , class "button"
+      , class "button button-secondary"
       ]
-      [ text miz.filename ]
+      [ text "Run" ]
     ]
 
 viewTacView : FileName -> Html msg

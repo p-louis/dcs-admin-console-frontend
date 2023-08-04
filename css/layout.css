@@ -24,6 +24,7 @@
     align-items: center;
 }
 
+
 #banner {
     width: 100%;
     padding-top: calc(var(--distance-m) + 2px);

@@ -6603,7 +6603,7 @@ var $author$project$Pages$Upload$refreshTacViews = function (session) {
 };
 var $author$project$Pages$Upload$init = function (session) {
 	return _Utils_Tuple2(
-		{currenMission: $author$project$Pages$Upload$Loading, file: $author$project$Pages$Upload$None, missions: $author$project$Pages$Upload$Loading, session: session, tacViews: $author$project$Pages$Upload$Loading},
+		{currentMission: $author$project$Pages$Upload$Loading, file: $author$project$Pages$Upload$None, missions: $author$project$Pages$Upload$Loading, session: session, tacViews: $author$project$Pages$Upload$Loading},
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
 				[
@@ -7562,7 +7562,7 @@ var $author$project$Pages$Upload$update = F2(
 						_Utils_update(
 							model,
 							{
-								currenMission: $author$project$Pages$Upload$Loaded(name)
+								currentMission: $author$project$Pages$Upload$Loaded(name)
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -7571,7 +7571,7 @@ var $author$project$Pages$Upload$update = F2(
 						_Utils_update(
 							model,
 							{
-								currenMission: $author$project$Pages$Upload$LoadError(
+								currentMission: $author$project$Pages$Upload$LoadError(
 									$author$project$Util$errToString(err))
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -7594,8 +7594,26 @@ var $author$project$Pages$Upload$update = F2(
 										$elm$json$Json$Encode$string(missionName))
 									]))),
 						$elm$json$Json$Decode$succeed(_Utils_Tuple0)));
-			default:
+			case 'GotMissionChangeResult':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'ClickedRefreshCurrent':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{currentMission: $author$project$Pages$Upload$Loading}),
+					$author$project$Pages$Upload$refreshMission(model.session));
+			case 'ClickedRefreshTac':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{tacViews: $author$project$Pages$Upload$Loading}),
+					$author$project$Pages$Upload$refreshTacViews(model.session));
+			default:
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{missions: $author$project$Pages$Upload$Loading}),
+					$author$project$Pages$Upload$refreshMissions(model.session));
 		}
 	});
 var $author$project$Util$updateWith = F3(
@@ -8033,6 +8051,9 @@ var $author$project$Pages$NotFound$view = {
 		]),
 	title: 'Not Found'
 };
+var $author$project$Pages$Upload$ClickedRefreshCurrent = {$: 'ClickedRefreshCurrent'};
+var $author$project$Pages$Upload$ClickedRefreshMissions = {$: 'ClickedRefreshMissions'};
+var $author$project$Pages$Upload$ClickedRefreshTac = {$: 'ClickedRefreshTac'};
 var $author$project$Pages$Upload$ClickedSelectFile = {$: 'ClickedSelectFile'};
 var $author$project$Pages$Upload$ClickedUpload = function (a) {
 	return {$: 'ClickedUpload', a: a};
@@ -8081,20 +8102,24 @@ var $author$project$Pages$Upload$ClickedRun = function (a) {
 var $author$project$Pages$Upload$viewMission = function (miz) {
 	return A2(
 		$elm$html$Html$div,
-		_List_Nil,
 		_List_fromArray(
 			[
+				$elm$html$Html$Attributes$class('split')
+			]),
+		_List_fromArray(
+			[
+				$elm$html$Html$text(miz.filename),
 				A2(
 				$elm$html$Html$button,
 				_List_fromArray(
 					[
 						$elm$html$Html$Events$onClick(
 						$author$project$Pages$Upload$ClickedRun(miz.filename)),
-						$elm$html$Html$Attributes$class('button')
+						$elm$html$Html$Attributes$class('button button-secondary')
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text(miz.filename)
+						$elm$html$Html$text('Run')
 					]))
 			]));
 };
@@ -8141,348 +8166,429 @@ var $author$project$Pages$Upload$view = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$id('upload')
+								$elm$html$Html$Attributes$id('mission-stuff')
 							]),
-						A2(
-							$elm$core$List$cons,
-							A2(
-								$elm$html$Html$h3,
-								_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Upload Mission File')
+										$elm$html$Html$Attributes$id('current-mission')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('split')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$h3,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Current Mission')
+													])),
+												A2(
+												$elm$html$Html$button,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('button button-secondary'),
+														$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedRefreshCurrent)
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Refresh')
+													]))
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_Nil,
+										function () {
+											var _v0 = model.currentMission;
+											switch (_v0.$) {
+												case 'Loading':
+													return _List_fromArray(
+														[
+															$author$project$Util$viewLoadingWithMsg('Loading Current Mission')
+														]);
+												case 'Loaded':
+													var mis = _v0.a;
+													return _List_fromArray(
+														[
+															$elm$html$Html$text(mis.filename)
+														]);
+												default:
+													var err = _v0.a;
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$div,
+															_List_Nil,
+															_List_fromArray(
+																[
+																	$elm$html$Html$text(err)
+																]))
+														]);
+											}
+										}())
 									])),
-							function () {
-								var _v0 = model.file;
-								if (_v0.$ === 'Uploading') {
-									var file = _v0.a;
-									return _List_fromArray(
-										[
-											$author$project$Util$viewLoadingWithMsg(
-											'Uploading ' + $elm$file$File$name(file))
-										]);
-								} else {
-									return _List_fromArray(
-										[
-											A2(
-											$elm$html$Html$label,
-											_List_fromArray(
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$id('mission-list')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('split')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$h3,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Existing Missions')
+													])),
+												A2(
+												$elm$html$Html$button,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('button button-secondary'),
+														$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedRefreshMissions)
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Refresh')
+													]))
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_Nil,
+										function () {
+											var _v1 = model.missions;
+											switch (_v1.$) {
+												case 'Loading':
+													return _List_fromArray(
+														[
+															$author$project$Util$viewLoadingWithMsg('Loading Mission files')
+														]);
+												case 'Loaded':
+													var missions = _v1.a;
+													return A2($elm$core$List$map, $author$project$Pages$Upload$viewMission, missions);
+												default:
+													var err = _v1.a;
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$div,
+															_List_Nil,
+															_List_fromArray(
+																[
+																	$elm$html$Html$text(err)
+																]))
+														]);
+											}
+										}())
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$id('upload')
+									]),
+								A2(
+									$elm$core$List$cons,
+									A2(
+										$elm$html$Html$h3,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Upload Mission File')
+											])),
+									function () {
+										var _v2 = model.file;
+										if (_v2.$ === 'Uploading') {
+											var file = _v2.a;
+											return _List_fromArray(
 												[
-													$elm$html$Html$Attributes$class('form-field-label'),
-													$elm$html$Html$Attributes$for('form-type')
-												]),
-											_List_fromArray(
+													$author$project$Util$viewLoadingWithMsg(
+													'Uploading ' + $elm$file$File$name(file))
+												]);
+										} else {
+											return _List_fromArray(
 												[
 													A2(
-													$elm$html$Html$span,
+													$elm$html$Html$label,
 													_List_fromArray(
 														[
-															$elm$html$Html$Attributes$class('form-field-mandatory')
+															$elm$html$Html$Attributes$class('form-field-label'),
+															$elm$html$Html$Attributes$for('form-type')
 														]),
 													_List_fromArray(
 														[
-															$elm$html$Html$text('Select File ')
-														]))
-												])),
-											A2(
-											$elm$html$Html$div,
-											_List_fromArray(
-												[
-													$elm$html$Html$Attributes$class('form-field-input-container' + errorCss),
-													$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedSelectFile)
-												]),
-											_Utils_ap(
-												_List_fromArray(
-													[
-														A2(
-														$elm$html$Html$button,
-														_List_fromArray(
-															[
-																$elm$html$Html$Attributes$class('button')
-															]),
-														_List_fromArray(
-															[
-																$elm$html$Html$text('Select File..')
-															]))
-													]),
-												function () {
-													var _v1 = model.file;
-													switch (_v1.$) {
-														case 'Selected':
-															var file = _v1.a;
-															return _List_fromArray(
+															A2(
+															$elm$html$Html$span,
+															_List_fromArray(
 																[
-																	A2(
-																	$elm$html$Html$div,
-																	_List_fromArray(
-																		[
-																			A2($elm$html$Html$Attributes$style, 'margin-left', '1em')
-																		]),
-																	_List_fromArray(
-																		[
-																			$elm$html$Html$text(
-																			$elm$file$File$name(file))
-																		]))
-																]);
-														case 'Uploading':
-															var file = _v1.a;
-															return _List_fromArray(
+																	$elm$html$Html$Attributes$class('form-field-mandatory')
+																]),
+															_List_fromArray(
 																[
-																	A2(
-																	$elm$html$Html$div,
-																	_List_fromArray(
-																		[
-																			A2($elm$html$Html$Attributes$style, 'margin-left', '1em')
-																		]),
-																	_List_fromArray(
-																		[
-																			$elm$html$Html$text(
-																			$elm$file$File$name(file))
-																		]))
-																]);
-														default:
-															return _List_Nil;
-													}
-												}())),
-											A2(
-											$elm$html$Html$div,
-											_List_fromArray(
-												[
-													$elm$html$Html$Attributes$class('form-field-description')
-												]),
-											_List_fromArray(
-												[
-													$elm$html$Html$text('Select the file to upload')
-												])),
-											A2(
-											$elm$html$Html$div,
-											_List_Nil,
-											function () {
-												var _v2 = model.file;
-												switch (_v2.$) {
-													case 'None':
-														return _List_Nil;
-													case 'Selected':
-														var file = _v2.a;
-														return _List_fromArray(
+																	$elm$html$Html$text('Select File ')
+																]))
+														])),
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('form-field-input-container' + errorCss),
+															$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedSelectFile)
+														]),
+													_Utils_ap(
+														_List_fromArray(
 															[
 																A2(
 																$elm$html$Html$button,
 																_List_fromArray(
 																	[
-																		$elm$html$Html$Events$onClick(
-																		$author$project$Pages$Upload$ClickedUpload(file)),
 																		$elm$html$Html$Attributes$class('button')
 																	]),
 																_List_fromArray(
 																	[
-																		$elm$html$Html$text('Upload')
+																		$elm$html$Html$text('Select File..')
 																	]))
-															]);
-													case 'Uploading':
-														var file = _v2.a;
-														return _List_fromArray(
-															[
-																$author$project$Util$viewLoadingWithMsg(
-																'Uploading file ' + $elm$file$File$name(file))
-															]);
-													case 'Error':
-														var error = _v2.a;
-														return _List_fromArray(
-															[
-																A2(
-																$elm$html$Html$div,
-																_List_Nil,
-																_List_fromArray(
+															]),
+														function () {
+															var _v3 = model.file;
+															switch (_v3.$) {
+																case 'Selected':
+																	var file = _v3.a;
+																	return _List_fromArray(
+																		[
+																			A2(
+																			$elm$html$Html$div,
+																			_List_fromArray(
+																				[
+																					A2($elm$html$Html$Attributes$style, 'margin-left', '1em')
+																				]),
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$text(
+																					$elm$file$File$name(file))
+																				]))
+																		]);
+																case 'Uploading':
+																	var file = _v3.a;
+																	return _List_fromArray(
+																		[
+																			A2(
+																			$elm$html$Html$div,
+																			_List_fromArray(
+																				[
+																					A2($elm$html$Html$Attributes$style, 'margin-left', '1em')
+																				]),
+																			_List_fromArray(
+																				[
+																					$elm$html$Html$text(
+																					$elm$file$File$name(file))
+																				]))
+																		]);
+																default:
+																	return _List_Nil;
+															}
+														}())),
+													A2(
+													$elm$html$Html$div,
+													_List_fromArray(
+														[
+															$elm$html$Html$Attributes$class('form-field-description')
+														]),
+													_List_fromArray(
+														[
+															$elm$html$Html$text('Select the file to upload')
+														])),
+													A2(
+													$elm$html$Html$div,
+													_List_Nil,
+													function () {
+														var _v4 = model.file;
+														switch (_v4.$) {
+															case 'None':
+																return _List_Nil;
+															case 'Selected':
+																var file = _v4.a;
+																return _List_fromArray(
 																	[
-																		$elm$html$Html$text('Something went wrong: '),
-																		$elm$html$Html$text(error)
-																	]))
-															]);
-													default:
-														return _List_fromArray(
-															[
-																A2(
-																$elm$html$Html$div,
-																_List_Nil,
-																_List_fromArray(
+																		A2(
+																		$elm$html$Html$button,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$Events$onClick(
+																				$author$project$Pages$Upload$ClickedUpload(file)),
+																				$elm$html$Html$Attributes$class('button')
+																			]),
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Upload')
+																			]))
+																	]);
+															case 'Uploading':
+																var file = _v4.a;
+																return _List_fromArray(
 																	[
-																		$elm$html$Html$text('Upload Successful')
-																	]))
-															]);
-												}
-											}())
-										]);
-								}
-							}()))
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$id('liberation')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$h3,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Liberation Status')
+																		$author$project$Util$viewLoadingWithMsg(
+																		'Uploading file ' + $elm$file$File$name(file))
+																	]);
+															case 'Error':
+																var error = _v4.a;
+																return _List_fromArray(
+																	[
+																		A2(
+																		$elm$html$Html$div,
+																		_List_Nil,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Something went wrong: '),
+																				$elm$html$Html$text(error)
+																			]))
+																	]);
+															default:
+																return _List_fromArray(
+																	[
+																		A2(
+																		$elm$html$Html$div,
+																		_List_Nil,
+																		_List_fromArray(
+																			[
+																				$elm$html$Html$text('Upload Successful')
+																			]))
+																	]);
+														}
+													}())
+												]);
+										}
+									}()))
 							])),
 						A2(
 						$elm$html$Html$div,
-						_List_Nil,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$id('file-stuff')
+							]),
 						_List_fromArray(
 							[
 								A2(
-								$elm$html$Html$a,
+								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$href('/api/liberation/state.json'),
-										$elm$html$Html$Attributes$target('new')
+										$elm$html$Html$Attributes$id('liberation')
 									]),
 								_List_fromArray(
 									[
-										$elm$html$Html$text('Download Liberation Status')
+										A2(
+										$elm$html$Html$h3,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Liberation Status')
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_Nil,
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$a,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$href('/api/liberation/state.json'),
+														$elm$html$Html$Attributes$target('new')
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Download Liberation Status')
+													]))
+											]))
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$id('tac-view-list')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('split')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$h3,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text('TacView Files')
+													])),
+												A2(
+												$elm$html$Html$button,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('button button-secondary'),
+														$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedRefreshTac)
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Refresh')
+													]))
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_Nil,
+										function () {
+											var _v5 = model.tacViews;
+											switch (_v5.$) {
+												case 'Loading':
+													return _List_fromArray(
+														[
+															$author$project$Util$viewLoadingWithMsg('Loading TacView Files')
+														]);
+												case 'Loaded':
+													var tacViews = _v5.a;
+													return A2(
+														$elm$core$List$map,
+														$author$project$Pages$Upload$viewTacView,
+														$elm$core$List$reverse(tacViews));
+												default:
+													var err = _v5.a;
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$div,
+															_List_Nil,
+															_List_fromArray(
+																[
+																	$elm$html$Html$text(err)
+																]))
+														]);
+											}
+										}())
 									]))
 							]))
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$id('current-mission')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$h3,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Current Mission')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_Nil,
-						function () {
-							var _v3 = model.currenMission;
-							switch (_v3.$) {
-								case 'Loading':
-									return _List_fromArray(
-										[
-											$author$project$Util$viewLoadingWithMsg('Loading Current Mission')
-										]);
-								case 'Loaded':
-									var mis = _v3.a;
-									return _List_fromArray(
-										[
-											$elm$html$Html$text(mis.filename)
-										]);
-								default:
-									var err = _v3.a;
-									return _List_fromArray(
-										[
-											A2(
-											$elm$html$Html$div,
-											_List_Nil,
-											_List_fromArray(
-												[
-													$elm$html$Html$text(err)
-												]))
-										]);
-							}
-						}())
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$id('mission-list')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$h3,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Existing Missions')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_Nil,
-						function () {
-							var _v4 = model.missions;
-							switch (_v4.$) {
-								case 'Loading':
-									return _List_fromArray(
-										[
-											$author$project$Util$viewLoadingWithMsg('Loading Mission files')
-										]);
-								case 'Loaded':
-									var missions = _v4.a;
-									return A2($elm$core$List$map, $author$project$Pages$Upload$viewMission, missions);
-								default:
-									var err = _v4.a;
-									return _List_fromArray(
-										[
-											A2(
-											$elm$html$Html$div,
-											_List_Nil,
-											_List_fromArray(
-												[
-													$elm$html$Html$text(err)
-												]))
-										]);
-							}
-						}())
-					])),
-				A2(
-				$elm$html$Html$div,
-				_List_fromArray(
-					[
-						$elm$html$Html$Attributes$id('tac-view-list')
-					]),
-				_List_fromArray(
-					[
-						A2(
-						$elm$html$Html$h3,
-						_List_Nil,
-						_List_fromArray(
-							[
-								$elm$html$Html$text('Existing TacView Files')
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_Nil,
-						function () {
-							var _v5 = model.tacViews;
-							switch (_v5.$) {
-								case 'Loading':
-									return _List_fromArray(
-										[
-											$author$project$Util$viewLoadingWithMsg('Loading TacView Files')
-										]);
-								case 'Loaded':
-									var tacViews = _v5.a;
-									return A2($elm$core$List$map, $author$project$Pages$Upload$viewTacView, tacViews);
-								default:
-									var err = _v5.a;
-									return _List_fromArray(
-										[
-											A2(
-											$elm$html$Html$div,
-											_List_Nil,
-											_List_fromArray(
-												[
-													$elm$html$Html$text(err)
-												]))
-										]);
-							}
-						}())
 					]))
 			]),
 		title: 'Server File Management'

@@ -222,6 +222,26 @@
     --button-font-family: 'Arial', sans-serif;
 }
 
+#file-stuff {
+    display: grid;
+    grid-template-columns: 25em 50em;
+}
+
+#mission-stuff {
+    display: grid;
+    grid-template-columns: 25em 50em auto;
+}
+
+.split {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.split:hover {
+    background-color: var(--color-blue-dark);
+}
+
 html {
     height: 100%;
     display: flex;
@@ -283,6 +303,10 @@ h2 {
 
 h3 {
     margin: 0;
+}
+
+div {
+    padding: 0.2em;
 }
 
 fieldset {
