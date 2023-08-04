@@ -5665,54 +5665,9 @@ var $author$project$Pages$Login$init = function (session) {
 };
 var $author$project$Pages$Upload$Loading = {$: 'Loading'};
 var $author$project$Pages$Upload$None = {$: 'None'};
-var $author$project$Pages$Upload$GotCurrentMissionResult = function (a) {
-	return {$: 'GotCurrentMissionResult', a: a};
+var $author$project$Pages$Upload$GotPauseResult = function (a) {
+	return {$: 'GotPauseResult', a: a};
 };
-var $author$project$Api$Endpoint$Endpoint = function (a) {
-	return {$: 'Endpoint', a: a};
-};
-var $elm$url$Url$Builder$toQueryPair = function (_v0) {
-	var key = _v0.a;
-	var value = _v0.b;
-	return key + ('=' + value);
-};
-var $elm$url$Url$Builder$toQuery = function (parameters) {
-	if (!parameters.b) {
-		return '';
-	} else {
-		return '?' + A2(
-			$elm$core$String$join,
-			'&',
-			A2($elm$core$List$map, $elm$url$Url$Builder$toQueryPair, parameters));
-	}
-};
-var $elm$url$Url$Builder$relative = F2(
-	function (pathSegments, parameters) {
-		return _Utils_ap(
-			A2($elm$core$String$join, '/', pathSegments),
-			$elm$url$Url$Builder$toQuery(parameters));
-	});
-var $author$project$Api$Endpoint$url = F2(
-	function (paths, queryParams) {
-		return $author$project$Api$Endpoint$Endpoint(
-			A2(
-				$elm$url$Url$Builder$relative,
-				A2($elm$core$List$cons, 'api', paths),
-				queryParams));
-	});
-var $author$project$Api$Endpoint$currentMission = A2(
-	$author$project$Api$Endpoint$url,
-	_List_fromArray(
-		['admin', 'mission', 'current']),
-	_List_Nil);
-var $author$project$Pages$Upload$FileName = function (filename) {
-	return {filename: filename};
-};
-var $elm$json$Json$Decode$field = _Json_decodeField;
-var $author$project$Pages$Upload$filenameDecoder = A2(
-	$elm$json$Json$Decode$map,
-	$author$project$Pages$Upload$FileName,
-	A2($elm$json$Json$Decode$field, 'filename', $elm$json$Json$Decode$string));
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
 		return {$: 'BadStatus_', a: a, b: b};
@@ -6552,6 +6507,52 @@ var $author$project$Api$getSecure = F4(
 				withCredentials: false
 			});
 	});
+var $author$project$Api$Endpoint$Endpoint = function (a) {
+	return {$: 'Endpoint', a: a};
+};
+var $elm$url$Url$Builder$toQueryPair = function (_v0) {
+	var key = _v0.a;
+	var value = _v0.b;
+	return key + ('=' + value);
+};
+var $elm$url$Url$Builder$toQuery = function (parameters) {
+	if (!parameters.b) {
+		return '';
+	} else {
+		return '?' + A2(
+			$elm$core$String$join,
+			'&',
+			A2($elm$core$List$map, $elm$url$Url$Builder$toQueryPair, parameters));
+	}
+};
+var $elm$url$Url$Builder$relative = F2(
+	function (pathSegments, parameters) {
+		return _Utils_ap(
+			A2($elm$core$String$join, '/', pathSegments),
+			$elm$url$Url$Builder$toQuery(parameters));
+	});
+var $author$project$Api$Endpoint$url = F2(
+	function (paths, queryParams) {
+		return $author$project$Api$Endpoint$Endpoint(
+			A2(
+				$elm$url$Url$Builder$relative,
+				A2($elm$core$List$cons, 'api', paths),
+				queryParams));
+	});
+var $author$project$Api$Endpoint$pause = A2(
+	$author$project$Api$Endpoint$url,
+	_List_fromArray(
+		['admin', 'pause']),
+	_List_Nil);
+var $author$project$Pages$Upload$Pause = function (pauseState) {
+	return {pauseState: pauseState};
+};
+var $elm$json$Json$Decode$bool = _Json_decodeBool;
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $author$project$Pages$Upload$pauseDecoder = A2(
+	$elm$json$Json$Decode$map,
+	$author$project$Pages$Upload$Pause,
+	A2($elm$json$Json$Decode$field, 'pause_state', $elm$json$Json$Decode$bool));
 var $author$project$Pages$Upload$sessUser = function (session) {
 	if (session.$ === 'Guest') {
 		return {token: ''};
@@ -6560,6 +6561,29 @@ var $author$project$Pages$Upload$sessUser = function (session) {
 		return user;
 	}
 };
+var $author$project$Pages$Upload$getPause = function (session) {
+	return A4(
+		$author$project$Api$getSecure,
+		$author$project$Pages$Upload$sessUser(session),
+		$author$project$Api$Endpoint$pause,
+		$author$project$Pages$Upload$GotPauseResult,
+		$author$project$Pages$Upload$pauseDecoder);
+};
+var $author$project$Pages$Upload$GotCurrentMissionResult = function (a) {
+	return {$: 'GotCurrentMissionResult', a: a};
+};
+var $author$project$Api$Endpoint$currentMission = A2(
+	$author$project$Api$Endpoint$url,
+	_List_fromArray(
+		['admin', 'mission', 'current']),
+	_List_Nil);
+var $author$project$Pages$Upload$FileName = function (filename) {
+	return {filename: filename};
+};
+var $author$project$Pages$Upload$filenameDecoder = A2(
+	$elm$json$Json$Decode$map,
+	$author$project$Pages$Upload$FileName,
+	A2($elm$json$Json$Decode$field, 'filename', $elm$json$Json$Decode$string));
 var $author$project$Pages$Upload$refreshMission = function (session) {
 	return A4(
 		$author$project$Api$getSecure,
@@ -6603,13 +6627,14 @@ var $author$project$Pages$Upload$refreshTacViews = function (session) {
 };
 var $author$project$Pages$Upload$init = function (session) {
 	return _Utils_Tuple2(
-		{currentMission: $author$project$Pages$Upload$Loading, file: $author$project$Pages$Upload$None, missions: $author$project$Pages$Upload$Loading, session: session, tacViews: $author$project$Pages$Upload$Loading},
+		{currentMission: $author$project$Pages$Upload$Loading, file: $author$project$Pages$Upload$None, missions: $author$project$Pages$Upload$Loading, paused: false, session: session, tacViews: $author$project$Pages$Upload$Loading},
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
 				[
 					$author$project$Pages$Upload$refreshMissions(session),
 					$author$project$Pages$Upload$refreshTacViews(session),
-					$author$project$Pages$Upload$refreshMission(session)
+					$author$project$Pages$Upload$refreshMission(session),
+					$author$project$Pages$Upload$getPause(session)
 				])));
 };
 var $elm$browser$Browser$Navigation$load = _Browser_load;
@@ -7341,6 +7366,9 @@ var $author$project$Pages$Upload$Error = function (a) {
 var $author$project$Pages$Upload$GotMissionChangeResult = function (a) {
 	return {$: 'GotMissionChangeResult', a: a};
 };
+var $author$project$Pages$Upload$GotPauseChangeResult = function (a) {
+	return {$: 'GotPauseChangeResult', a: a};
+};
 var $author$project$Pages$Upload$GotUploadResult = function (a) {
 	return {$: 'GotUploadResult', a: a};
 };
@@ -7455,6 +7483,11 @@ var $author$project$Pages$Upload$sessionUser = function (model) {
 		return user;
 	}
 };
+var $author$project$Api$Endpoint$unpause = A2(
+	$author$project$Api$Endpoint$url,
+	_List_fromArray(
+		['admin', 'unpause']),
+	_List_Nil);
 var $author$project$Api$Endpoint$upload = A2(
 	$author$project$Api$Endpoint$url,
 	_List_fromArray(
@@ -7608,12 +7641,47 @@ var $author$project$Pages$Upload$update = F2(
 						model,
 						{tacViews: $author$project$Pages$Upload$Loading}),
 					$author$project$Pages$Upload$refreshTacViews(model.session));
-			default:
+			case 'ClickedRefreshMissions':
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{missions: $author$project$Pages$Upload$Loading}),
 					$author$project$Pages$Upload$refreshMissions(model.session));
+			case 'ClickedPause':
+				return model.paused ? _Utils_Tuple2(
+					model,
+					A5(
+						$author$project$Api$postSecureWithErrorBody,
+						$author$project$Pages$Upload$sessionUser(model),
+						$author$project$Api$Endpoint$unpause,
+						$author$project$Pages$Upload$GotPauseChangeResult,
+						$elm$http$Http$emptyBody,
+						$elm$json$Json$Decode$succeed(_Utils_Tuple0))) : _Utils_Tuple2(
+					model,
+					A5(
+						$author$project$Api$postSecureWithErrorBody,
+						$author$project$Pages$Upload$sessionUser(model),
+						$author$project$Api$Endpoint$pause,
+						$author$project$Pages$Upload$GotPauseChangeResult,
+						$elm$http$Http$emptyBody,
+						$elm$json$Json$Decode$succeed(_Utils_Tuple0)));
+			case 'GotPauseResult':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var state = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{paused: state.pauseState}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var err = result.a;
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			default:
+				return _Utils_Tuple2(
+					model,
+					$author$project$Pages$Upload$getPause(model.session));
 		}
 	});
 var $author$project$Util$updateWith = F3(
@@ -8051,6 +8119,7 @@ var $author$project$Pages$NotFound$view = {
 		]),
 	title: 'Not Found'
 };
+var $author$project$Pages$Upload$ClickedPause = {$: 'ClickedPause'};
 var $author$project$Pages$Upload$ClickedRefreshCurrent = {$: 'ClickedRefreshCurrent'};
 var $author$project$Pages$Upload$ClickedRefreshMissions = {$: 'ClickedRefreshMissions'};
 var $author$project$Pages$Upload$ClickedRefreshTac = {$: 'ClickedRefreshTac'};
@@ -8175,6 +8244,26 @@ var $author$project$Pages$Upload$view = function (model) {
 					]),
 				_List_fromArray(
 					[
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$id('controls')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$button,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('button'),
+										$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedPause)
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Pause')
+									]))
+							])),
 						A2(
 						$elm$html$Html$div,
 						_List_fromArray(

@@ -100,6 +100,14 @@ currentMission : Endpoint
 currentMission =
     url [ "admin", "mission", "current" ] []
 
+pause : Endpoint
+pause =
+    url [ "admin", "pause" ] []
+
+unpause : Endpoint
+unpause =
+    url [ "admin", "unpause" ] []
+
 tacview : Endpoint
 tacview =
     url [ "admin", "tacview" ] []

@@ -6,7 +6,7 @@ import File.Select as Select exposing (file)
 import Html exposing (Html, a, button, div, h3, label, span, text)
 import Html.Attributes exposing (class, disabled, for, href, id, style, target)
 import Html.Events exposing (onClick)
-import Http exposing (filePart, jsonBody, multipartBody)
+import Http exposing (emptyBody, filePart, jsonBody, multipartBody)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (string, object)
 import Session exposing (Session(..))
@@ -40,12 +40,20 @@ type Selection
 type alias Model =
   { session: Session
   , file: Selection
+  , paused: Bool
   , missions: Status (List FileName)
   , tacViews: Status (List FileName)
   , currentMission: Status FileName
   }
 
+type alias Pause =
+  { pauseState: Bool
+  }
 
+pauseDecoder : Decoder Pause
+pauseDecoder =
+  Decode.map Pause
+    (Decode.field "pause_state" Decode.bool)
 
 type UploadMsg
     = UpdateFile File
@@ -54,9 +62,12 @@ type UploadMsg
     | ClickedRun String
     | ClickedRefreshCurrent
     | ClickedRefreshTac
+    | ClickedPause
     | ClickedRefreshMissions
     | GotUploadResult (Result Http.Error ())
+    | GotPauseResult (Result Http.Error Pause)
     | GotMissionChangeResult (Result Http.Error ())
+    | GotPauseChangeResult (Result Http.Error ())
     | GotMissionResult (Result Http.Error (List FileName))
     | GotCurrentMissionResult (Result Http.Error FileName)
     | GotTacViewResult (Result Http.Error (List FileName))
@@ -70,6 +81,7 @@ init : Session -> ( Model, Cmd UploadMsg )
 init session =
   ({ session = session
   , file = None
+  , paused = False
   , missions = Loading
   , tacViews = Loading
   , currentMission = Loading
@@ -78,12 +90,17 @@ init session =
     [ refreshMissions session
     , refreshTacViews session
     , refreshMission session
+    , getPause session
     ]
   )
 
 refreshMissions : Session -> Cmd UploadMsg
 refreshMissions session =
   Api.getSecure (sessUser session) Endpoint.mission GotMissionResult (Decode.list filenameDecoder)
+
+getPause : Session -> Cmd UploadMsg
+getPause session =
+  Api.getSecure (sessUser session) Endpoint.pause GotPauseResult (pauseDecoder)
 
 refreshMission : Session -> Cmd UploadMsg
 refreshMission session =
@@ -186,6 +203,30 @@ update msg model =
         , refreshMissions model.session
         )
 
+      ClickedPause ->
+        if model.paused then
+          ( model
+          , Api.postSecureWithErrorBody (sessionUser model) Endpoint.unpause GotPauseChangeResult emptyBody (Decode.succeed ())
+          )
+        else
+          ( model
+          , Api.postSecureWithErrorBody (sessionUser model) Endpoint.pause GotPauseChangeResult emptyBody (Decode.succeed ())
+          )
+
+
+      GotPauseResult result ->
+        case result of
+          Ok state ->
+            ( { model | paused = state.pauseState }
+            , Cmd.none
+            )
+
+          Err err -> ( model, Cmd.none)
+
+      GotPauseChangeResult _ ->
+        ( model, getPause model.session )
+
+
 
 
 
@@ -211,7 +252,14 @@ view model =
     { title = "Server File Management"
     , body =
         [ div [ id "gate" ]
-          [ div [ id "mission-stuff" ]
+          [ div [ id "controls"]
+            [ button
+              [ class "button"
+              , onClick ClickedPause
+              ]
+              [ text "Pause" ]
+            ]
+          , div [ id "mission-stuff" ]
             [ div [ id "current-mission" ]
               [ div [class "split"]
                 [ h3 [] [ text "Current Mission" ]
