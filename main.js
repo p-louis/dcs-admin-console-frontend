@@ -7634,7 +7634,12 @@ var $author$project$Pages$Upload$update = F2(
 					_Utils_update(
 						model,
 						{currentMission: $author$project$Pages$Upload$Loading}),
-					$author$project$Pages$Upload$refreshMission(model.session));
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								$author$project$Pages$Upload$refreshMission(model.session),
+								$author$project$Pages$Upload$getPause(model.session)
+							])));
 			case 'ClickedRefreshTac':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -8250,26 +8255,6 @@ var $author$project$Pages$Upload$view = function (model) {
 						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$id('controls')
-							]),
-						_List_fromArray(
-							[
-								A2(
-								$elm$html$Html$button,
-								_List_fromArray(
-									[
-										$elm$html$Html$Attributes$class('button'),
-										$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedPause)
-									]),
-								_List_fromArray(
-									[
-										$elm$html$Html$text(pauseText)
-									]))
-							])),
-						A2(
-						$elm$html$Html$div,
-						_List_fromArray(
-							[
 								$elm$html$Html$Attributes$id('mission-stuff')
 							]),
 						_List_fromArray(
@@ -8307,6 +8292,17 @@ var $author$project$Pages$Upload$view = function (model) {
 												_List_fromArray(
 													[
 														$elm$html$Html$text('Refresh')
+													])),
+												A2(
+												$elm$html$Html$button,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('button'),
+														$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedPause)
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text(pauseText)
 													]))
 											])),
 										A2(

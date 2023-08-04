@@ -190,7 +190,10 @@ update msg model =
 
       ClickedRefreshCurrent ->
         ( { model | currentMission = Loading }
-        , refreshMission model.session
+        , Cmd.batch
+          [ refreshMission model.session
+          , getPause model.session
+          ]
         )
 
       ClickedRefreshTac ->
@@ -227,11 +230,6 @@ update msg model =
         ( model, getPause model.session )
 
 
-
-
-
-
-
 -- Subscriptions
 subscriptions : Model -> Sub UploadMsg
 subscriptions model = Sub.none
@@ -242,8 +240,8 @@ view : Model -> { title : String, body : List (Html UploadMsg) }
 view model =
     let
       errorCss = case model.file of
-          Error _ -> " form-field-input-container-error"
-          _ -> ""
+        Error _ -> " form-field-input-container-error"
+        _ -> ""
 
       currentMission = case model.currentMission of
         Loaded s -> s.filename
@@ -255,14 +253,7 @@ view model =
     { title = "Server File Management"
     , body =
         [ div [ id "gate" ]
-          [ div [ id "controls"]
-            [ button
-              [ class "button"
-              , onClick ClickedPause
-              ]
-              [ text pauseText ]
-            ]
-          , div [ id "mission-stuff" ]
+          [ div [ id "mission-stuff" ]
             [ div [ id "current-mission" ]
               [ div [class "split"]
                 [ h3 [] [ text "Current Mission" ]
@@ -271,6 +262,11 @@ view model =
                   , onClick ClickedRefreshCurrent
                   ]
                   [ text "Refresh" ]
+                , button
+                  [ class "button"
+                  , onClick ClickedPause
+                  ]
+                  [ text pauseText ]
                 ]
               , div []
                 <| case model.currentMission of
