@@ -4,7 +4,7 @@ import Api.Endpoint as Endpoint exposing (Endpoint(..))
 import File exposing (File)
 import File.Select as Select exposing (file)
 import Html exposing (Html, a, button, div, h3, label, span, text)
-import Html.Attributes exposing (class, for, href, id, style, target)
+import Html.Attributes exposing (class, disabled, for, href, id, style, target)
 import Html.Events exposing (onClick)
 import Http exposing (filePart, jsonBody, multipartBody)
 import Json.Decode as Decode exposing (Decoder)
@@ -203,6 +203,10 @@ view model =
       errorCss = case model.file of
           Error _ -> " form-field-input-container-error"
           _ -> ""
+
+      currentMission = case model.currentMission of
+        Loaded s -> s.filename
+        _ -> ""
     in
     { title = "Server File Management"
     , body =
@@ -243,7 +247,7 @@ view model =
                     [ viewLoadingWithMsg "Loading Mission files" ]
 
                   Loaded missions ->
-                    List.map viewMission missions
+                    List.map (viewMission currentMission) missions
 
                   LoadError err ->
                     [ div [] [ text err ] ]
@@ -341,13 +345,17 @@ view model =
       ]
     }
 
-viewMission : FileName -> Html UploadMsg
-viewMission miz =
+viewMission : String -> FileName -> Html UploadMsg
+viewMission current miz =
+  let
+    buttonEnable = miz.filename == current
+  in
   div [ class "split" ]
     [ text miz.filename
     , button
       [ onClick (ClickedRun miz.filename)
       , class "button button-secondary"
+      , disabled buttonEnable
       ]
       [ text "Run" ]
     ]

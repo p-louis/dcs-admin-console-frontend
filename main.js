@@ -8099,30 +8099,34 @@ var $author$project$Util$viewLoadingWithMsg = function (message) {
 var $author$project$Pages$Upload$ClickedRun = function (a) {
 	return {$: 'ClickedRun', a: a};
 };
-var $author$project$Pages$Upload$viewMission = function (miz) {
-	return A2(
-		$elm$html$Html$div,
-		_List_fromArray(
-			[
-				$elm$html$Html$Attributes$class('split')
-			]),
-		_List_fromArray(
-			[
-				$elm$html$Html$text(miz.filename),
-				A2(
-				$elm$html$Html$button,
-				_List_fromArray(
-					[
-						$elm$html$Html$Events$onClick(
-						$author$project$Pages$Upload$ClickedRun(miz.filename)),
-						$elm$html$Html$Attributes$class('button button-secondary')
-					]),
-				_List_fromArray(
-					[
-						$elm$html$Html$text('Run')
-					]))
-			]));
-};
+var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
+var $author$project$Pages$Upload$viewMission = F2(
+	function (current, miz) {
+		var buttonEnable = _Utils_eq(miz.filename, current);
+		return A2(
+			$elm$html$Html$div,
+			_List_fromArray(
+				[
+					$elm$html$Html$Attributes$class('split')
+				]),
+			_List_fromArray(
+				[
+					$elm$html$Html$text(miz.filename),
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick(
+							$author$project$Pages$Upload$ClickedRun(miz.filename)),
+							$elm$html$Html$Attributes$class('button button-secondary'),
+							$elm$html$Html$Attributes$disabled(buttonEnable)
+						]),
+					_List_fromArray(
+						[
+							$elm$html$Html$text('Run')
+						]))
+				]));
+	});
 var $author$project$Pages$Upload$viewTacView = function (tv) {
 	return A2(
 		$elm$html$Html$div,
@@ -8144,9 +8148,18 @@ var $author$project$Pages$Upload$viewTacView = function (tv) {
 };
 var $author$project$Pages$Upload$view = function (model) {
 	var errorCss = function () {
-		var _v6 = model.file;
-		if (_v6.$ === 'Error') {
+		var _v7 = model.file;
+		if (_v7.$ === 'Error') {
 			return ' form-field-input-container-error';
+		} else {
+			return '';
+		}
+	}();
+	var currentMission = function () {
+		var _v6 = model.currentMission;
+		if (_v6.$ === 'Loaded') {
+			var s = _v6.a;
+			return s.filename;
 		} else {
 			return '';
 		}
@@ -8285,7 +8298,10 @@ var $author$project$Pages$Upload$view = function (model) {
 														]);
 												case 'Loaded':
 													var missions = _v1.a;
-													return A2($elm$core$List$map, $author$project$Pages$Upload$viewMission, missions);
+													return A2(
+														$elm$core$List$map,
+														$author$project$Pages$Upload$viewMission(currentMission),
+														missions);
 												default:
 													var err = _v1.a;
 													return _List_fromArray(
