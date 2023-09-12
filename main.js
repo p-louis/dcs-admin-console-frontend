@@ -7370,6 +7370,7 @@ var $author$project$Pages$Login$update = F2(
 						$author$project$Route$Home));
 		}
 	});
+var $author$project$Pages$Upload$ClickedRefreshCurrent = {$: 'ClickedRefreshCurrent'};
 var $author$project$Pages$Upload$Error = function (a) {
 	return {$: 'Error', a: a};
 };
@@ -7636,9 +7637,7 @@ var $author$project$Pages$Upload$update = F2(
 			case 'ClickedRun':
 				var missionIndex = msg.a;
 				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{currentMission: $author$project$Pages$Upload$Loading}),
+					model,
 					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
 							[
@@ -7656,7 +7655,7 @@ var $author$project$Pages$Upload$update = F2(
 												$elm$json$Json$Encode$int(missionIndex))
 											]))),
 								$elm$json$Json$Decode$succeed(_Utils_Tuple0)),
-								$author$project$Pages$Upload$refreshMission(model.session)
+								A2($andrewMacmurray$elm_delay$Delay$after, 1000, $author$project$Pages$Upload$ClickedRefreshCurrent)
 							])));
 			case 'GotMissionChangeResult':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -8160,7 +8159,6 @@ var $author$project$Pages$NotFound$view = {
 	title: 'Not Found'
 };
 var $author$project$Pages$Upload$ClickedPause = {$: 'ClickedPause'};
-var $author$project$Pages$Upload$ClickedRefreshCurrent = {$: 'ClickedRefreshCurrent'};
 var $author$project$Pages$Upload$ClickedRefreshMissions = {$: 'ClickedRefreshMissions'};
 var $author$project$Pages$Upload$ClickedRefreshTac = {$: 'ClickedRefreshTac'};
 var $author$project$Pages$Upload$ClickedSelectFile = {$: 'ClickedSelectFile'};
