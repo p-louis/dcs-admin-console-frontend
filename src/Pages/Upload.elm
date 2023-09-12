@@ -188,7 +188,7 @@ update msg model =
           Err err -> ( { model | currentMission = LoadError (errToString err) }, Cmd.none)
 
       ClickedRun missionIndex ->
-        ( model
+        ( { model | currentMission = Loading }
         , Cmd.batch
           [ Api.postSecureWithErrorBody (sessionUser model) Endpoint.mission GotMissionChangeResult
             (jsonBody

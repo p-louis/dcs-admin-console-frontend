@@ -7636,7 +7636,9 @@ var $author$project$Pages$Upload$update = F2(
 			case 'ClickedRun':
 				var missionIndex = msg.a;
 				return _Utils_Tuple2(
-					model,
+					_Utils_update(
+						model,
+						{currentMission: $author$project$Pages$Upload$Loading}),
 					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
 							[
