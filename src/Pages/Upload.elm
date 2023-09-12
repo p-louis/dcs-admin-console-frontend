@@ -189,13 +189,16 @@ update msg model =
 
       ClickedRun missionIndex ->
         ( model
-        , Api.postSecureWithErrorBody (sessionUser model) Endpoint.mission GotMissionChangeResult
-          (jsonBody
-              <| Encode.object
-                [ ("mission_index", Encode.int missionIndex)
-                ]
+        , Cmd.batch
+          [ Api.postSecureWithErrorBody (sessionUser model) Endpoint.mission GotMissionChangeResult
+            (jsonBody
+                <| Encode.object
+                  [ ("mission_index", Encode.int missionIndex)
+                  ]
 
-          ) (Decode.succeed ())
+            ) (Decode.succeed ())
+          , refreshMission model.session
+          ]
         )
 
       GotMissionChangeResult _ ->

@@ -7637,20 +7637,25 @@ var $author$project$Pages$Upload$update = F2(
 				var missionIndex = msg.a;
 				return _Utils_Tuple2(
 					model,
-					A5(
-						$author$project$Api$postSecureWithErrorBody,
-						$author$project$Pages$Upload$sessionUser(model),
-						$author$project$Api$Endpoint$mission,
-						$author$project$Pages$Upload$GotMissionChangeResult,
-						$elm$http$Http$jsonBody(
-							$elm$json$Json$Encode$object(
-								_List_fromArray(
-									[
-										_Utils_Tuple2(
-										'mission_index',
-										$elm$json$Json$Encode$int(missionIndex))
-									]))),
-						$elm$json$Json$Decode$succeed(_Utils_Tuple0)));
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								A5(
+								$author$project$Api$postSecureWithErrorBody,
+								$author$project$Pages$Upload$sessionUser(model),
+								$author$project$Api$Endpoint$mission,
+								$author$project$Pages$Upload$GotMissionChangeResult,
+								$elm$http$Http$jsonBody(
+									$elm$json$Json$Encode$object(
+										_List_fromArray(
+											[
+												_Utils_Tuple2(
+												'mission_index',
+												$elm$json$Json$Encode$int(missionIndex))
+											]))),
+								$elm$json$Json$Decode$succeed(_Utils_Tuple0)),
+								$author$project$Pages$Upload$refreshMission(model.session)
+							])));
 			case 'GotMissionChangeResult':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'ClickedRefreshCurrent':
