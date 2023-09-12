@@ -303,26 +303,6 @@ view model =
                   LoadError err ->
                     [ div [] [ text err ] ]
               ]
-            , div [ id "mission-list" ]
-              [ div [ class "split"]
-                [ h3 [] [ text "Existing Missions" ]
-                , button
-                  [ class "button button-secondary"
-                  , onClick ClickedRefreshMissions
-                  ]
-                  [ text "Refresh" ]
-                ]
-              , div []
-                <| case model.missions of
-                  Loading ->
-                    [ viewLoadingWithMsg "Loading Mission files" ]
-
-                  Loaded missions ->
-                    List.map (viewMission currentMission) missions
-
-                  LoadError err ->
-                    [ div [] [ text err ] ]
-              ]
             , div [ id "upload" ]
               <| h3 [] [ text "Upload Mission File" ]
                 :: case model.file of
@@ -377,6 +357,26 @@ view model =
                           [ div [] [ text "Upload Successful"]
                           ]
                     ]
+            , div [ id "mission-list" ]
+              [ div [ class "split"]
+                [ h3 [] [ text "Existing Missions" ]
+                , button
+                  [ class "button button-secondary"
+                  , onClick ClickedRefreshMissions
+                  ]
+                  [ text "Refresh" ]
+                ]
+              , div []
+                <| case model.missions of
+                  Loading ->
+                    [ viewLoadingWithMsg "Loading Mission files" ]
+
+                  Loaded missions ->
+                    List.map (viewMission currentMission) missions
+
+                  LoadError err ->
+                    [ div [] [ text err ] ]
+              ]
             ]
           , div [ id "file-stuff" ]
             [ div [ id "liberation" ]

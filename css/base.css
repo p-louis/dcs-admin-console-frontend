@@ -168,7 +168,7 @@
       */
     --color-orange: rgb(255, 160, 0);
     --color-orange-op09: rgba(255, 160, 0, 0.9);
-    --link-color: var(--color-orange-op09);
+    --link-color: var(--color-red-op09);
     --button-background-color: var(--link-color);
 
     /** ORANGE LIGHT
@@ -177,7 +177,7 @@
       */
     --color-orange-light: rgb(255, 198, 38);
     --color-orange-light-op09: rgba(255, 198, 38, 0.9);
-    --link-hover-color: var(--color-orange-light-op09);
+    --link-hover-color: var(--color-red-dark);
 
     /** RED (PURE)
       * Usage: Exclusively as error message font color
@@ -223,14 +223,34 @@
     --button-font-family: 'Arial', sans-serif;
 }
 
+#gate {
+    width: 95svw;
+    height: 95svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+}
+
+#login {
+    display: flex;
+    max-width: 120em;
+}
+
+#gate > * {
+    height: 80svh;
+    overflow-y: auto;
+}
+
 #file-stuff {
     display: grid;
-    grid-template-columns: 25em 50em;
+    grid-template-rows: 5em auto;
 }
 
 #mission-stuff {
     display: grid;
-    grid-template-columns: 25em 50em auto;
+    grid-template-rows: 10em 10em auto;
+    min-width: 80em;
 }
 
 .split {

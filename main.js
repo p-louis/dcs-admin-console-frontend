@@ -8390,73 +8390,6 @@ var $author$project$Pages$Upload$view = function (model) {
 								$elm$html$Html$div,
 								_List_fromArray(
 									[
-										$elm$html$Html$Attributes$id('mission-list')
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$elm$html$Html$div,
-										_List_fromArray(
-											[
-												$elm$html$Html$Attributes$class('split')
-											]),
-										_List_fromArray(
-											[
-												A2(
-												$elm$html$Html$h3,
-												_List_Nil,
-												_List_fromArray(
-													[
-														$elm$html$Html$text('Existing Missions')
-													])),
-												A2(
-												$elm$html$Html$button,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('button button-secondary'),
-														$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedRefreshMissions)
-													]),
-												_List_fromArray(
-													[
-														$elm$html$Html$text('Refresh')
-													]))
-											])),
-										A2(
-										$elm$html$Html$div,
-										_List_Nil,
-										function () {
-											var _v1 = model.missions;
-											switch (_v1.$) {
-												case 'Loading':
-													return _List_fromArray(
-														[
-															$author$project$Util$viewLoadingWithMsg('Loading Mission files')
-														]);
-												case 'Loaded':
-													var missions = _v1.a;
-													return A2(
-														$elm$core$List$map,
-														$author$project$Pages$Upload$viewMission(currentMission),
-														missions);
-												default:
-													var err = _v1.a;
-													return _List_fromArray(
-														[
-															A2(
-															$elm$html$Html$div,
-															_List_Nil,
-															_List_fromArray(
-																[
-																	$elm$html$Html$text(err)
-																]))
-														]);
-											}
-										}())
-									])),
-								A2(
-								$elm$html$Html$div,
-								_List_fromArray(
-									[
 										$elm$html$Html$Attributes$id('upload')
 									]),
 								A2(
@@ -8469,9 +8402,9 @@ var $author$project$Pages$Upload$view = function (model) {
 												$elm$html$Html$text('Upload Mission File')
 											])),
 									function () {
-										var _v2 = model.file;
-										if (_v2.$ === 'Uploading') {
-											var file = _v2.a;
+										var _v1 = model.file;
+										if (_v1.$ === 'Uploading') {
+											var file = _v1.a;
 											return _List_fromArray(
 												[
 													$author$project$Util$viewLoadingWithMsg(
@@ -8522,10 +8455,10 @@ var $author$project$Pages$Upload$view = function (model) {
 																	]))
 															]),
 														function () {
-															var _v3 = model.file;
-															switch (_v3.$) {
+															var _v2 = model.file;
+															switch (_v2.$) {
 																case 'Selected':
-																	var file = _v3.a;
+																	var file = _v2.a;
 																	return _List_fromArray(
 																		[
 																			A2(
@@ -8541,7 +8474,7 @@ var $author$project$Pages$Upload$view = function (model) {
 																				]))
 																		]);
 																case 'Uploading':
-																	var file = _v3.a;
+																	var file = _v2.a;
 																	return _List_fromArray(
 																		[
 																			A2(
@@ -8574,12 +8507,12 @@ var $author$project$Pages$Upload$view = function (model) {
 													$elm$html$Html$div,
 													_List_Nil,
 													function () {
-														var _v4 = model.file;
-														switch (_v4.$) {
+														var _v3 = model.file;
+														switch (_v3.$) {
 															case 'None':
 																return _List_Nil;
 															case 'Selected':
-																var file = _v4.a;
+																var file = _v3.a;
 																return _List_fromArray(
 																	[
 																		A2(
@@ -8596,14 +8529,14 @@ var $author$project$Pages$Upload$view = function (model) {
 																			]))
 																	]);
 															case 'Uploading':
-																var file = _v4.a;
+																var file = _v3.a;
 																return _List_fromArray(
 																	[
 																		$author$project$Util$viewLoadingWithMsg(
 																		'Uploading file ' + $elm$file$File$name(file))
 																	]);
 															case 'Error':
-																var error = _v4.a;
+																var error = _v3.a;
 																return _List_fromArray(
 																	[
 																		A2(
@@ -8630,7 +8563,74 @@ var $author$project$Pages$Upload$view = function (model) {
 													}())
 												]);
 										}
-									}()))
+									}())),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$id('mission-list')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('split')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$h3,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Existing Missions')
+													])),
+												A2(
+												$elm$html$Html$button,
+												_List_fromArray(
+													[
+														$elm$html$Html$Attributes$class('button button-secondary'),
+														$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedRefreshMissions)
+													]),
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Refresh')
+													]))
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_Nil,
+										function () {
+											var _v4 = model.missions;
+											switch (_v4.$) {
+												case 'Loading':
+													return _List_fromArray(
+														[
+															$author$project$Util$viewLoadingWithMsg('Loading Mission files')
+														]);
+												case 'Loaded':
+													var missions = _v4.a;
+													return A2(
+														$elm$core$List$map,
+														$author$project$Pages$Upload$viewMission(currentMission),
+														missions);
+												default:
+													var err = _v4.a;
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$div,
+															_List_Nil,
+															_List_fromArray(
+																[
+																	$elm$html$Html$text(err)
+																]))
+														]);
+											}
+										}())
+									]))
 							])),
 						A2(
 						$elm$html$Html$div,
