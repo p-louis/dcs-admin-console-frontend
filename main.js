@@ -6601,13 +6601,23 @@ var $author$project$Api$Endpoint$mission = A2(
 	_List_fromArray(
 		['admin', 'mission']),
 	_List_Nil);
+var $author$project$Pages$Upload$MissionListEntry = F2(
+	function (filename, index) {
+		return {filename: filename, index: index};
+	});
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $author$project$Pages$Upload$missionListEntryDecoder = A3(
+	$elm$json$Json$Decode$map2,
+	$author$project$Pages$Upload$MissionListEntry,
+	A2($elm$json$Json$Decode$field, 'filename', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'index', $elm$json$Json$Decode$int));
 var $author$project$Pages$Upload$refreshMissions = function (session) {
 	return A4(
 		$author$project$Api$getSecure,
 		$author$project$Pages$Upload$sessUser(session),
 		$author$project$Api$Endpoint$mission,
 		$author$project$Pages$Upload$GotMissionResult,
-		$elm$json$Json$Decode$list($author$project$Pages$Upload$filenameDecoder));
+		$elm$json$Json$Decode$list($author$project$Pages$Upload$missionListEntryDecoder));
 };
 var $author$project$Pages$Upload$GotTacViewResult = function (a) {
 	return {$: 'GotTacViewResult', a: a};
@@ -7427,6 +7437,7 @@ var $elm$file$File$Select$file = F2(
 			_File_uploadOne(mimes));
 	});
 var $elm$http$Http$filePart = _Http_pair;
+var $elm$json$Json$Encode$int = _Json_wrap;
 var $elm$http$Http$multipartBody = function (parts) {
 	return A2(
 		_Http_pair,
@@ -7623,7 +7634,7 @@ var $author$project$Pages$Upload$update = F2(
 						$elm$core$Platform$Cmd$none);
 				}
 			case 'ClickedRun':
-				var missionName = msg.a;
+				var missionIndex = msg.a;
 				return _Utils_Tuple2(
 					model,
 					A5(
@@ -7636,8 +7647,8 @@ var $author$project$Pages$Upload$update = F2(
 								_List_fromArray(
 									[
 										_Utils_Tuple2(
-										'mission_name',
-										$elm$json$Json$Encode$string(missionName))
+										'mission_index',
+										$elm$json$Json$Encode$int(missionIndex))
 									]))),
 						$elm$json$Json$Decode$succeed(_Utils_Tuple0)));
 			case 'GotMissionChangeResult':
@@ -8193,7 +8204,7 @@ var $author$project$Pages$Upload$ClickedRun = function (a) {
 var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
 var $author$project$Pages$Upload$viewMission = F2(
 	function (current, miz) {
-		var buttonEnable = _Utils_eq(miz.filename, current);
+		var buttonEnable = _Utils_eq(miz.filename, current + '.miz');
 		return A2(
 			$elm$html$Html$div,
 			_List_fromArray(
@@ -8208,7 +8219,7 @@ var $author$project$Pages$Upload$viewMission = F2(
 					_List_fromArray(
 						[
 							$elm$html$Html$Events$onClick(
-							$author$project$Pages$Upload$ClickedRun(miz.filename)),
+							$author$project$Pages$Upload$ClickedRun(miz.index)),
 							$elm$html$Html$Attributes$class('button button-secondary'),
 							$elm$html$Html$Attributes$disabled(buttonEnable)
 						]),

@@ -26,6 +26,12 @@ filenameDecoder =
     Decode.map FileName
         (Decode.field "filename" Decode.string)
 
+missionListEntryDecoder : Decoder MissionListEntry
+missionListEntryDecoder =
+    Decode.map2 MissionListEntry
+        (Decode.field "filename" Decode.string)
+        (Decode.field "index" Decode.int)
+
 type Status t
   = Loading
   | Loaded t
@@ -42,13 +48,18 @@ type alias Model =
   { session: Session
   , file: Selection
   , paused: Bool
-  , missions: Status (List FileName)
+  , missions: Status (List MissionListEntry)
   , tacViews: Status (List FileName)
   , currentMission: Status FileName
   }
 
 type alias Pause =
   { pauseState: Bool
+  }
+
+type alias MissionListEntry =
+  { filename: String
+  , index: Int
   }
 
 pauseDecoder : Decoder Pause
@@ -60,7 +71,7 @@ type UploadMsg
     = UpdateFile File
     | ClickedSelectFile
     | ClickedUpload File
-    | ClickedRun String
+    | ClickedRun Int
     | ClickedRefreshCurrent
     | ClickedRefreshTac
     | ClickedPause
@@ -70,7 +81,7 @@ type UploadMsg
     | GotPauseResult (Result Http.Error Pause)
     | GotMissionChangeResult (Result Http.Error ())
     | GotPauseChangeResult (Result Http.Error ())
-    | GotMissionResult (Result Http.Error (List FileName))
+    | GotMissionResult (Result Http.Error (List MissionListEntry))
     | GotCurrentMissionResult (Result Http.Error FileName)
     | GotTacViewResult (Result Http.Error (List FileName))
 
@@ -98,7 +109,7 @@ init session =
 
 refreshMissions : Session -> Cmd UploadMsg
 refreshMissions session =
-  Api.getSecure (sessUser session) Endpoint.mission GotMissionResult (Decode.list filenameDecoder)
+  Api.getSecure (sessUser session) Endpoint.mission GotMissionResult (Decode.list missionListEntryDecoder)
 
 getPause : Session -> Cmd UploadMsg
 getPause session =
@@ -176,12 +187,12 @@ update msg model =
 
           Err err -> ( { model | currentMission = LoadError (errToString err) }, Cmd.none)
 
-      ClickedRun missionName ->
+      ClickedRun missionIndex ->
         ( model
         , Api.postSecureWithErrorBody (sessionUser model) Endpoint.mission GotMissionChangeResult
           (jsonBody
               <| Encode.object
-                [ ("mission_name", Encode.string missionName)
+                [ ("mission_index", Encode.int missionIndex)
                 ]
 
           ) (Decode.succeed ())
@@ -402,15 +413,15 @@ view model =
       ]
     }
 
-viewMission : String -> FileName -> Html UploadMsg
+viewMission : String -> MissionListEntry -> Html UploadMsg
 viewMission current miz =
   let
-    buttonEnable = miz.filename == current
+    buttonEnable = miz.filename == current ++ ".miz"
   in
   div [ class "split" ]
     [ text miz.filename
     , button
-      [ onClick (ClickedRun miz.filename)
+      [ onClick (ClickedRun miz.index)
       , class "button button-secondary"
       , disabled buttonEnable
       ]
