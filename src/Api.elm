@@ -186,6 +186,21 @@ postSecureWithErrorBody user url toMsg body decoder =
         , withCredentials = False
         }
 
+deleteSecureWithErrorBody : User -> Endpoint -> (Result Http.Error a -> msg) -> Body -> Decoder a -> Cmd msg
+deleteSecureWithErrorBody user url toMsg body decoder =
+    Endpoint.request
+        { method = "DELETE"
+        , url = url
+        , expect = Util.expectJson toMsg decoder
+        , headers =
+          [ Http.header "Authorization" ("Bearer " ++ user.token)
+          ]
+        , body = body
+        , timeout = Nothing
+        , tracker = Nothing
+        , withCredentials = False
+        }
+
 delete : Endpoint -> (Result Http.Error a -> msg) -> Body -> Decoder a -> Cmd msg
 delete url toMsg body decoder =
     Endpoint.request

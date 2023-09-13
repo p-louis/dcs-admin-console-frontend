@@ -4,7 +4,7 @@ import Api.Endpoint as Endpoint exposing (Endpoint(..))
 import Delay
 import File exposing (File)
 import File.Select as Select exposing (file)
-import Html exposing (Html, a, button, div, h3, label, span, text)
+import Html exposing (Html, a, button, div, h3, i, label, span, text)
 import Html.Attributes exposing (class, disabled, for, href, id, style, target)
 import Html.Events exposing (onClick)
 import Http exposing (emptyBody, filePart, jsonBody, multipartBody)
@@ -72,6 +72,7 @@ type UploadMsg
     | ClickedSelectFile
     | ClickedUpload File
     | ClickedRun Int
+    | ClickedDelete Int
     | ClickedRefreshCurrent
     | ClickedRefreshTac
     | ClickedPause
@@ -79,17 +80,13 @@ type UploadMsg
     | ClickedRefreshMissions
     | GotUploadResult (Result Http.Error ())
     | GotPauseResult (Result Http.Error Pause)
-    | GotMissionChangeResult (Result Http.Error ())
+    | GotEmptyResult (Result Http.Error ())
     | GotPauseChangeResult (Result Http.Error ())
     | GotMissionResult (Result Http.Error (List MissionListEntry))
     | GotCurrentMissionResult (Result Http.Error FileName)
     | GotTacViewResult (Result Http.Error (List FileName))
 
-
-
 -- Init
-
-
 init : Session -> ( Model, Cmd UploadMsg )
 init session =
   ({ session = session
@@ -124,10 +121,7 @@ refreshTacViews session =
   Api.getSecure (sessUser session) Endpoint.tacview GotTacViewResult (Decode.list filenameDecoder)
 -- Update
 sessionUser : Model -> User
-sessionUser model =
-  case model.session of
-    Guest _ -> { token = ""}
-    LoggedIn _ user -> user
+sessionUser model = sessUser model.session
 
 sessUser : Session -> User
 sessUser session =
@@ -190,18 +184,27 @@ update msg model =
       ClickedRun missionIndex ->
         ( model
         , Cmd.batch
-          [ Api.postSecureWithErrorBody (sessionUser model) Endpoint.mission GotMissionChangeResult
+          [ Api.postSecureWithErrorBody (sessionUser model) Endpoint.mission GotEmptyResult
             (jsonBody
                 <| Encode.object
                   [ ("mission_index", Encode.int missionIndex)
                   ]
-
             ) (Decode.succeed ())
           , Delay.after 1000 <| ClickedRefreshCurrent
           ]
         )
 
-      GotMissionChangeResult _ ->
+      ClickedDelete missionIndex ->
+        ( model
+        , Api.deleteSecureWithErrorBody (sessionUser model) Endpoint.mission GotEmptyResult
+          (jsonBody
+              <| Encode.object
+                [ ("mission_index", Encode.int missionIndex)
+                ]
+          ) (Decode.succeed ())
+        )
+
+      GotEmptyResult _ ->
         (model, Cmd.none)
 
       ClickedRefreshCurrent ->
@@ -429,6 +432,12 @@ viewMission current miz =
       , disabled buttonEnable
       ]
       [ text "Run" ]
+    , button
+      [ onClick (ClickedDelete miz.index)
+      , class "button button-secondary"
+      , disabled buttonEnable
+      ]
+      [ i [ class "fas fa-trash" ] [] ]
     ]
 
 viewTacView : FileName -> Html msg

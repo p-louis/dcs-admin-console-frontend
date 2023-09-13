@@ -7374,8 +7374,8 @@ var $author$project$Pages$Upload$ClickedRefreshCurrent = {$: 'ClickedRefreshCurr
 var $author$project$Pages$Upload$Error = function (a) {
 	return {$: 'Error', a: a};
 };
-var $author$project$Pages$Upload$GotMissionChangeResult = function (a) {
-	return {$: 'GotMissionChangeResult', a: a};
+var $author$project$Pages$Upload$GotEmptyResult = function (a) {
+	return {$: 'GotEmptyResult', a: a};
 };
 var $author$project$Pages$Upload$GotPauseChangeResult = function (a) {
 	return {$: 'GotPauseChangeResult', a: a};
@@ -7409,42 +7409,6 @@ var $andrewMacmurray$elm_delay$Delay$after = F2(
 			$elm$core$Basics$always(msg),
 			$elm$core$Process$sleep(time));
 	});
-var $author$project$Util$errToString = function (err) {
-	switch (err.$) {
-		case 'BadUrl':
-			var url = err.a;
-			return url;
-		case 'Timeout':
-			return 'Timeout';
-		case 'NetworkError':
-			return 'Network Error';
-		case 'BadStatus':
-			var _int = err.a;
-			return 'BadStatus ' + $elm$core$String$fromInt(_int);
-		default:
-			var error = err.a;
-			return error;
-	}
-};
-var $elm$time$Time$Posix = function (a) {
-	return {$: 'Posix', a: a};
-};
-var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
-var $elm$file$File$Select$file = F2(
-	function (mimes, toMsg) {
-		return A2(
-			$elm$core$Task$perform,
-			toMsg,
-			_File_uploadOne(mimes));
-	});
-var $elm$http$Http$filePart = _Http_pair;
-var $elm$json$Json$Encode$int = _Json_wrap;
-var $elm$http$Http$multipartBody = function (parts) {
-	return A2(
-		_Http_pair,
-		'',
-		_Http_toFormData(parts));
-};
 var $author$project$Util$expectJson = F2(
 	function (toMsg, decoder) {
 		return A2(
@@ -7482,6 +7446,59 @@ var $author$project$Util$expectJson = F2(
 				}
 			});
 	});
+var $author$project$Api$deleteSecureWithErrorBody = F5(
+	function (user, url, toMsg, body, decoder) {
+		return $author$project$Api$Endpoint$request(
+			{
+				body: body,
+				expect: A2($author$project$Util$expectJson, toMsg, decoder),
+				headers: _List_fromArray(
+					[
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + user.token)
+					]),
+				method: 'DELETE',
+				timeout: $elm$core$Maybe$Nothing,
+				tracker: $elm$core$Maybe$Nothing,
+				url: url,
+				withCredentials: false
+			});
+	});
+var $author$project$Util$errToString = function (err) {
+	switch (err.$) {
+		case 'BadUrl':
+			var url = err.a;
+			return url;
+		case 'Timeout':
+			return 'Timeout';
+		case 'NetworkError':
+			return 'Network Error';
+		case 'BadStatus':
+			var _int = err.a;
+			return 'BadStatus ' + $elm$core$String$fromInt(_int);
+		default:
+			var error = err.a;
+			return error;
+	}
+};
+var $elm$time$Time$Posix = function (a) {
+	return {$: 'Posix', a: a};
+};
+var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
+var $elm$file$File$Select$file = F2(
+	function (mimes, toMsg) {
+		return A2(
+			$elm$core$Task$perform,
+			toMsg,
+			_File_uploadOne(mimes));
+	});
+var $elm$http$Http$filePart = _Http_pair;
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $elm$http$Http$multipartBody = function (parts) {
+	return A2(
+		_Http_pair,
+		'',
+		_Http_toFormData(parts));
+};
 var $author$project$Api$postSecureWithErrorBody = F5(
 	function (user, url, toMsg, body, decoder) {
 		return $author$project$Api$Endpoint$request(
@@ -7500,13 +7517,7 @@ var $author$project$Api$postSecureWithErrorBody = F5(
 			});
 	});
 var $author$project$Pages$Upload$sessionUser = function (model) {
-	var _v0 = model.session;
-	if (_v0.$ === 'Guest') {
-		return {token: ''};
-	} else {
-		var user = _v0.b;
-		return user;
-	}
+	return $author$project$Pages$Upload$sessUser(model.session);
 };
 var $author$project$Api$Endpoint$unpause = A2(
 	$author$project$Api$Endpoint$url,
@@ -7645,7 +7656,7 @@ var $author$project$Pages$Upload$update = F2(
 								$author$project$Api$postSecureWithErrorBody,
 								$author$project$Pages$Upload$sessionUser(model),
 								$author$project$Api$Endpoint$mission,
-								$author$project$Pages$Upload$GotMissionChangeResult,
+								$author$project$Pages$Upload$GotEmptyResult,
 								$elm$http$Http$jsonBody(
 									$elm$json$Json$Encode$object(
 										_List_fromArray(
@@ -7657,7 +7668,25 @@ var $author$project$Pages$Upload$update = F2(
 								$elm$json$Json$Decode$succeed(_Utils_Tuple0)),
 								A2($andrewMacmurray$elm_delay$Delay$after, 1000, $author$project$Pages$Upload$ClickedRefreshCurrent)
 							])));
-			case 'GotMissionChangeResult':
+			case 'ClickedDelete':
+				var missionIndex = msg.a;
+				return _Utils_Tuple2(
+					model,
+					A5(
+						$author$project$Api$deleteSecureWithErrorBody,
+						$author$project$Pages$Upload$sessionUser(model),
+						$author$project$Api$Endpoint$mission,
+						$author$project$Pages$Upload$GotEmptyResult,
+						$elm$http$Http$jsonBody(
+							$elm$json$Json$Encode$object(
+								_List_fromArray(
+									[
+										_Utils_Tuple2(
+										'mission_index',
+										$elm$json$Json$Encode$int(missionIndex))
+									]))),
+						$elm$json$Json$Decode$succeed(_Utils_Tuple0)));
+			case 'GotEmptyResult':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'ClickedRefreshCurrent':
 				return _Utils_Tuple2(
@@ -8203,10 +8232,14 @@ var $author$project$Util$viewLoadingWithMsg = function (message) {
 					]))
 			]));
 };
+var $author$project$Pages$Upload$ClickedDelete = function (a) {
+	return {$: 'ClickedDelete', a: a};
+};
 var $author$project$Pages$Upload$ClickedRun = function (a) {
 	return {$: 'ClickedRun', a: a};
 };
 var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
+var $elm$html$Html$i = _VirtualDom_node('i');
 var $author$project$Pages$Upload$viewMission = F2(
 	function (current, miz) {
 		var buttonEnable = _Utils_eq(miz.filename, current + '.miz');
@@ -8231,6 +8264,25 @@ var $author$project$Pages$Upload$viewMission = F2(
 					_List_fromArray(
 						[
 							$elm$html$Html$text('Run')
+						])),
+					A2(
+					$elm$html$Html$button,
+					_List_fromArray(
+						[
+							$elm$html$Html$Events$onClick(
+							$author$project$Pages$Upload$ClickedDelete(miz.index)),
+							$elm$html$Html$Attributes$class('button button-secondary'),
+							$elm$html$Html$Attributes$disabled(buttonEnable)
+						]),
+					_List_fromArray(
+						[
+							A2(
+							$elm$html$Html$i,
+							_List_fromArray(
+								[
+									$elm$html$Html$Attributes$class('fas fa-trash')
+								]),
+							_List_Nil)
 						]))
 				]));
 	});
