@@ -426,18 +426,20 @@ viewMission current miz =
   in
   div [ class "split" ]
     [ text miz.filename
-    , button
-      [ onClick (ClickedRun miz.index)
-      , class "button button-secondary"
-      , disabled buttonEnable
+    , div []
+    [ button
+        [ onClick (ClickedRun miz.index)
+        , class "button button-secondary"
+        , disabled buttonEnable
+        ]
+        [ text "Run" ]
+      , button
+        [ onClick (ClickedDelete miz.index)
+        , class "button button-secondary"
+        , disabled buttonEnable
+        ]
+        [ i [ class "fas fa-trash" ] [] ]
       ]
-      [ text "Run" ]
-    , button
-      [ onClick (ClickedDelete miz.index)
-      , class "button button-secondary"
-      , disabled buttonEnable
-      ]
-      [ i [ class "fas fa-trash" ] [] ]
     ]
 
 viewTacView : FileName -> Html msg

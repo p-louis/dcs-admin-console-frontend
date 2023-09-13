@@ -8253,36 +8253,42 @@ var $author$project$Pages$Upload$viewMission = F2(
 				[
 					$elm$html$Html$text(miz.filename),
 					A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onClick(
-							$author$project$Pages$Upload$ClickedRun(miz.index)),
-							$elm$html$Html$Attributes$class('button button-secondary'),
-							$elm$html$Html$Attributes$disabled(buttonEnable)
-						]),
-					_List_fromArray(
-						[
-							$elm$html$Html$text('Run')
-						])),
-					A2(
-					$elm$html$Html$button,
-					_List_fromArray(
-						[
-							$elm$html$Html$Events$onClick(
-							$author$project$Pages$Upload$ClickedDelete(miz.index)),
-							$elm$html$Html$Attributes$class('button button-secondary'),
-							$elm$html$Html$Attributes$disabled(buttonEnable)
-						]),
+					$elm$html$Html$div,
+					_List_Nil,
 					_List_fromArray(
 						[
 							A2(
-							$elm$html$Html$i,
+							$elm$html$Html$button,
 							_List_fromArray(
 								[
-									$elm$html$Html$Attributes$class('fas fa-trash')
+									$elm$html$Html$Events$onClick(
+									$author$project$Pages$Upload$ClickedRun(miz.index)),
+									$elm$html$Html$Attributes$class('button button-secondary'),
+									$elm$html$Html$Attributes$disabled(buttonEnable)
 								]),
-							_List_Nil)
+							_List_fromArray(
+								[
+									$elm$html$Html$text('Run')
+								])),
+							A2(
+							$elm$html$Html$button,
+							_List_fromArray(
+								[
+									$elm$html$Html$Events$onClick(
+									$author$project$Pages$Upload$ClickedDelete(miz.index)),
+									$elm$html$Html$Attributes$class('button button-secondary'),
+									$elm$html$Html$Attributes$disabled(buttonEnable)
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$elm$html$Html$i,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('fas fa-trash')
+										]),
+									_List_Nil)
+								]))
 						]))
 				]));
 	});
