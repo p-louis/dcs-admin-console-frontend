@@ -8196,6 +8196,7 @@ var $author$project$Pages$Upload$ClickedUpload = function (a) {
 };
 var $elm$html$Html$Attributes$for = $elm$html$Html$Attributes$stringProperty('htmlFor');
 var $elm$html$Html$h3 = _VirtualDom_node('h3');
+var $elm$html$Html$i = _VirtualDom_node('i');
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$file$File$name = _File_name;
 var $elm$html$Html$span = _VirtualDom_node('span');
@@ -8239,7 +8240,6 @@ var $author$project$Pages$Upload$ClickedRun = function (a) {
 	return {$: 'ClickedRun', a: a};
 };
 var $elm$html$Html$Attributes$disabled = $elm$html$Html$Attributes$boolProperty('disabled');
-var $elm$html$Html$i = _VirtualDom_node('i');
 var $author$project$Pages$Upload$viewMission = F2(
 	function (current, miz) {
 		var buttonEnable = _Utils_eq(miz.filename, current + '.miz');
@@ -8254,7 +8254,10 @@ var $author$project$Pages$Upload$viewMission = F2(
 					$elm$html$Html$text(miz.filename),
 					A2(
 					$elm$html$Html$div,
-					_List_Nil,
+					_List_fromArray(
+						[
+							$elm$html$Html$Attributes$class('button-group')
+						]),
 					_List_fromArray(
 						[
 							A2(
@@ -8303,7 +8306,7 @@ var $author$project$Pages$Upload$viewRefreshButton = function (message) {
 		$elm$html$Html$button,
 		_List_fromArray(
 			[
-				$elm$html$Html$Attributes$class('button button-secondary'),
+				$elm$html$Html$Attributes$class('button button-secondary icon-button'),
 				$elm$html$Html$Events$onClick(message)
 			]),
 		_List_fromArray(
@@ -8337,7 +8340,7 @@ var $author$project$Pages$Upload$viewTacView = function (tv) {
 			]));
 };
 var $author$project$Pages$Upload$view = function (model) {
-	var pauseText = model.paused ? 'Unpause' : 'Pause';
+	var pauseText = model.paused ? 'fas fa-play' : 'fas fa-pause';
 	var errorCss = function () {
 		var _v7 = model.file;
 		if (_v7.$ === 'Error') {
@@ -8398,17 +8401,32 @@ var $author$project$Pages$Upload$view = function (model) {
 													[
 														$elm$html$Html$text('Current Mission')
 													])),
-												$author$project$Pages$Upload$viewRefreshButton($author$project$Pages$Upload$ClickedRefreshCurrent),
 												A2(
-												$elm$html$Html$button,
+												$elm$html$Html$div,
 												_List_fromArray(
 													[
-														$elm$html$Html$Attributes$class('button'),
-														$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedPause)
+														$elm$html$Html$Attributes$class('button-group')
 													]),
 												_List_fromArray(
 													[
-														$elm$html$Html$text(pauseText)
+														$author$project$Pages$Upload$viewRefreshButton($author$project$Pages$Upload$ClickedRefreshCurrent),
+														A2(
+														$elm$html$Html$button,
+														_List_fromArray(
+															[
+																$elm$html$Html$Attributes$class('button icon-button'),
+																$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedPause)
+															]),
+														_List_fromArray(
+															[
+																A2(
+																$elm$html$Html$i,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$class(pauseText)
+																	]),
+																_List_Nil)
+															]))
 													]))
 											])),
 										A2(

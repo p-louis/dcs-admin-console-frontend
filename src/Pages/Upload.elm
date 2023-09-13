@@ -270,7 +270,7 @@ view model =
         Loaded s -> s.filename
         _ -> ""
 
-      pauseText = if model.paused then "Unpause" else "Pause"
+      pauseText = if model.paused then "fas fa-play" else "fas fa-pause"
       circle = if model.paused then "circle-paused" else "circle-running"
     in
     { title = "Server File Management"
@@ -280,12 +280,14 @@ view model =
             [ div [ id "current-mission" ]
               [ div [class "split"]
                 [ h3 [] [ text "Current Mission" ]
-                , viewRefreshButton ClickedRefreshCurrent
-                , button
-                  [ class "button"
-                  , onClick ClickedPause
+                , div [ class "button-group" ]
+                  [ viewRefreshButton ClickedRefreshCurrent
+                  ,  button
+                    [ class "button icon-button"
+                    , onClick ClickedPause
+                    ]
+                    [ i [ class pauseText ] [] ]
                   ]
-                  [ text pauseText ]
                 ]
               , div []
                 <| case model.currentMission of
@@ -410,7 +412,7 @@ view model =
 viewRefreshButton : msg -> Html msg
 viewRefreshButton message =
   button
-    [ class "button button-secondary"
+    [ class "button button-secondary icon-button"
     , onClick message
     ]
     [ i [ class "fas fa-sync-alt" ] [] ]
@@ -422,7 +424,7 @@ viewMission current miz =
   in
   div [ class "split" ]
     [ text miz.filename
-    , div []
+    , div [ class "button-group" ]
     [ button
         [ onClick (ClickedRun miz.index)
         , class "button button-secondary"

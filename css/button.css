@@ -47,6 +47,14 @@ a.button > i {
     line-height: initial;
 }
 
+.icon-button {
+    border-radius: 1em;
+}
+
+.button * {
+    padding-left: 5px;
+}
+
 .button:hover {
     background-color: var(--link-hover-color);
     color: var(--button-color);
@@ -92,4 +100,20 @@ a.button > i {
 .button-icon:hover {
     cursor: pointer;
     color: var(--color-purple-op08) !important;
+}
+
+.button-group {
+    padding-block: 0.5em;
+}
+
+.button-group > button {
+    border-radius: 0;
+}
+
+.button-group > button:first-child {
+    border-radius: 1em 0 0 1em;
+}
+
+.button-group > button:last-child {
+    border-radius: 0 1em 1em 0;
 }

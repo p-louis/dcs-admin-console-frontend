@@ -177,7 +177,7 @@
       */
     --color-orange-light: rgb(255, 198, 38);
     --color-orange-light-op09: rgba(255, 198, 38, 0.9);
-    --link-hover-color: var(--color-red-dark);
+    --link-hover-color: var(--color-pink);
 
     /** RED (PURE)
       * Usage: Exclusively as error message font color
@@ -266,7 +266,7 @@
 .circle-paused {
     height: 25px;
     width: 25px;
-    background-color: var(--color-yellow-pure);
+    background: radial-gradient(circle, rgba(159,164,50,1) 0%, rgba(0,0,0,0) 100%);
     border-radius: 50%;
     display: inline-block;
 }
@@ -274,7 +274,7 @@
 .circle-running {
     height: 25px;
     width: 25px;
-    background-color: var(--color-green-pure);
+    background: radial-gradient(circle, rgba(50,164,50,1) 0%, rgba(0,0,0,0) 100%);
     border-radius: 50%;
     display: inline-block;
 }
