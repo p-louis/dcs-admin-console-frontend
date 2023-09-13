@@ -8268,7 +8268,13 @@ var $author$project$Pages$Upload$viewMission = F2(
 								]),
 							_List_fromArray(
 								[
-									$elm$html$Html$text('Run')
+									A2(
+									$elm$html$Html$i,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('fas fa-play')
+										]),
+									_List_Nil)
 								])),
 							A2(
 							$elm$html$Html$button,
@@ -8292,6 +8298,25 @@ var $author$project$Pages$Upload$viewMission = F2(
 						]))
 				]));
 	});
+var $author$project$Pages$Upload$viewRefreshButton = function (message) {
+	return A2(
+		$elm$html$Html$button,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('button button-secondary'),
+				$elm$html$Html$Events$onClick(message)
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$i,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('fas fa-sync-alt')
+					]),
+				_List_Nil)
+			]));
+};
 var $author$project$Pages$Upload$viewTacView = function (tv) {
 	return A2(
 		$elm$html$Html$div,
@@ -8373,17 +8398,7 @@ var $author$project$Pages$Upload$view = function (model) {
 													[
 														$elm$html$Html$text('Current Mission')
 													])),
-												A2(
-												$elm$html$Html$button,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('button button-secondary'),
-														$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedRefreshCurrent)
-													]),
-												_List_fromArray(
-													[
-														$elm$html$Html$text('Refresh')
-													])),
+												$author$project$Pages$Upload$viewRefreshButton($author$project$Pages$Upload$ClickedRefreshCurrent),
 												A2(
 												$elm$html$Html$button,
 												_List_fromArray(
@@ -8645,17 +8660,7 @@ var $author$project$Pages$Upload$view = function (model) {
 													[
 														$elm$html$Html$text('Existing Missions')
 													])),
-												A2(
-												$elm$html$Html$button,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('button button-secondary'),
-														$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedRefreshMissions)
-													]),
-												_List_fromArray(
-													[
-														$elm$html$Html$text('Refresh')
-													]))
+												$author$project$Pages$Upload$viewRefreshButton($author$project$Pages$Upload$ClickedRefreshMissions)
 											])),
 										A2(
 										$elm$html$Html$div,
@@ -8754,17 +8759,7 @@ var $author$project$Pages$Upload$view = function (model) {
 													[
 														$elm$html$Html$text('TacView Files')
 													])),
-												A2(
-												$elm$html$Html$button,
-												_List_fromArray(
-													[
-														$elm$html$Html$Attributes$class('button button-secondary'),
-														$elm$html$Html$Events$onClick($author$project$Pages$Upload$ClickedRefreshTac)
-													]),
-												_List_fromArray(
-													[
-														$elm$html$Html$text('Refresh')
-													]))
+												$author$project$Pages$Upload$viewRefreshButton($author$project$Pages$Upload$ClickedRefreshTac)
 											])),
 										A2(
 										$elm$html$Html$div,

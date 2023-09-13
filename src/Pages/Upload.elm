@@ -280,11 +280,7 @@ view model =
             [ div [ id "current-mission" ]
               [ div [class "split"]
                 [ h3 [] [ text "Current Mission" ]
-                , button
-                  [ class "button button-secondary"
-                  , onClick ClickedRefreshCurrent
-                  ]
-                  [ text "Refresh" ]
+                , viewRefreshButton ClickedRefreshCurrent
                 , button
                   [ class "button"
                   , onClick ClickedPause
@@ -363,11 +359,7 @@ view model =
             , div [ id "mission-list" ]
               [ div [ class "split"]
                 [ h3 [] [ text "Existing Missions" ]
-                , button
-                  [ class "button button-secondary"
-                  , onClick ClickedRefreshMissions
-                  ]
-                  [ text "Refresh" ]
+                , viewRefreshButton ClickedRefreshMissions
                 ]
               , div []
                 <| case model.missions of
@@ -396,11 +388,7 @@ view model =
             , div [ id "tac-view-list" ]
               [ div [class "split"]
                 [ h3 [] [ text "TacView Files" ]
-                , button
-                  [ class "button button-secondary"
-                  , onClick ClickedRefreshTac
-                  ]
-                  [ text "Refresh" ]
+                , viewRefreshButton ClickedRefreshTac
                 ]
 
               , div []
@@ -419,6 +407,14 @@ view model =
       ]
     }
 
+viewRefreshButton : msg -> Html msg
+viewRefreshButton message =
+  button
+    [ class "button button-secondary"
+    , onClick message
+    ]
+    [ i [ class "fas fa-sync-alt" ] [] ]
+
 viewMission : String -> MissionListEntry -> Html UploadMsg
 viewMission current miz =
   let
@@ -432,7 +428,7 @@ viewMission current miz =
         , class "button button-secondary"
         , disabled buttonEnable
         ]
-        [ text "Run" ]
+        [ i [ class "fas fa-play" ] [] ]
       , button
         [ onClick (ClickedDelete miz.index)
         , class "button button-secondary"
