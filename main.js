@@ -8277,7 +8277,17 @@ var $author$project$Pages$Upload$viewMission = F2(
 										[
 											$elm$html$Html$Attributes$class('fas fa-play')
 										]),
-									_List_Nil)
+									_List_Nil),
+									A2(
+									$elm$html$Html$span,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('label')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Run')
+										]))
 								])),
 							A2(
 							$elm$html$Html$button,
@@ -8296,7 +8306,17 @@ var $author$project$Pages$Upload$viewMission = F2(
 										[
 											$elm$html$Html$Attributes$class('fas fa-trash')
 										]),
-									_List_Nil)
+									_List_Nil),
+									A2(
+									$elm$html$Html$span,
+									_List_fromArray(
+										[
+											$elm$html$Html$Attributes$class('label')
+										]),
+									_List_fromArray(
+										[
+											$elm$html$Html$text('Delete')
+										]))
 								]))
 						]))
 				]));
@@ -8317,7 +8337,17 @@ var $author$project$Pages$Upload$viewRefreshButton = function (message) {
 					[
 						$elm$html$Html$Attributes$class('fas fa-sync-alt')
 					]),
-				_List_Nil)
+				_List_Nil),
+				A2(
+				$elm$html$Html$span,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('label')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Refresh')
+					]))
 			]));
 };
 var $author$project$Pages$Upload$viewTacView = function (tv) {
@@ -8340,7 +8370,8 @@ var $author$project$Pages$Upload$viewTacView = function (tv) {
 			]));
 };
 var $author$project$Pages$Upload$view = function (model) {
-	var pauseText = model.paused ? 'fas fa-play' : 'fas fa-pause';
+	var pauseText = model.paused ? 'Play' : 'Pause';
+	var pauseClass = model.paused ? 'fas fa-play' : 'fas fa-pause';
 	var errorCss = function () {
 		var _v7 = model.file;
 		if (_v7.$ === 'Error') {
@@ -8423,9 +8454,19 @@ var $author$project$Pages$Upload$view = function (model) {
 																$elm$html$Html$i,
 																_List_fromArray(
 																	[
-																		$elm$html$Html$Attributes$class(pauseText)
+																		$elm$html$Html$Attributes$class(pauseClass)
 																	]),
-																_List_Nil)
+																_List_Nil),
+																A2(
+																$elm$html$Html$span,
+																_List_fromArray(
+																	[
+																		$elm$html$Html$Attributes$class('label')
+																	]),
+																_List_fromArray(
+																	[
+																		$elm$html$Html$text(pauseText)
+																	]))
 															]))
 													]))
 											])),

@@ -270,7 +270,8 @@ view model =
         Loaded s -> s.filename
         _ -> ""
 
-      pauseText = if model.paused then "fas fa-play" else "fas fa-pause"
+      pauseClass = if model.paused then "fas fa-play" else "fas fa-pause"
+      pauseText = if model.paused then "Play" else "Pause"
       circle = if model.paused then "circle-paused" else "circle-running"
     in
     { title = "Server File Management"
@@ -286,7 +287,9 @@ view model =
                     [ class "button icon-button"
                     , onClick ClickedPause
                     ]
-                    [ i [ class pauseText ] [] ]
+                    [ i [ class pauseClass ] []
+                    , span [ class "label" ] [ text pauseText ]
+                    ]
                   ]
                 ]
               , div []
@@ -415,7 +418,9 @@ viewRefreshButton message =
     [ class "button button-secondary icon-button"
     , onClick message
     ]
-    [ i [ class "fas fa-sync-alt" ] [] ]
+    [ i [ class "fas fa-sync-alt" ] []
+    , span [ class "label" ] [ text "Refresh" ]
+    ]
 
 viewMission : String -> MissionListEntry -> Html UploadMsg
 viewMission current miz =
@@ -430,13 +435,17 @@ viewMission current miz =
         , class "button button-secondary"
         , disabled buttonEnable
         ]
-        [ i [ class "fas fa-play" ] [] ]
+        [ i [ class "fas fa-play" ] []
+        , span [ class "label" ] [ text "Run" ]
+        ]
       , button
         [ onClick (ClickedDelete miz.index)
         , class "button button-secondary"
         , disabled buttonEnable
         ]
-        [ i [ class "fas fa-trash" ] [] ]
+        [ i [ class "fas fa-trash" ] []
+        , span [ class "label" ] [ text "Delete" ]
+        ]
       ]
     ]
 

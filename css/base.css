@@ -245,12 +245,14 @@
 #file-stuff {
     display: grid;
     grid-template-rows: 5em auto;
+    overflow-x: hidden;
 }
 
 #mission-stuff {
     display: grid;
     grid-template-rows: 10em 10em auto;
     min-width: 80em;
+    overflow-x: hidden;
 }
 
 .split {
