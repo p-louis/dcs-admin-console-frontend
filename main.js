@@ -8855,7 +8855,7 @@ var $author$project$Pages$Upload$view = function (model) {
 							]))
 					]))
 			]),
-		title: 'Server File Management'
+		title: 'DCS Server Management'
 	};
 };
 var $elm$virtual_dom$VirtualDom$map = _VirtualDom_map;

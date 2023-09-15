@@ -274,7 +274,7 @@ view model =
       pauseText = if model.paused then "Play" else "Pause"
       circle = if model.paused then "circle-paused" else "circle-running"
     in
-    { title = "Server File Management"
+    { title = "DCS Server Management"
     , body =
         [ div [ id "gate" ]
           [ div [ id "mission-stuff" ]
