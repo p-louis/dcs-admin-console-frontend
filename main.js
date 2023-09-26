@@ -5665,6 +5665,7 @@ var $author$project$Pages$Login$init = function (session) {
 };
 var $author$project$Pages$Upload$Loading = {$: 'Loading'};
 var $author$project$Pages$Upload$None = {$: 'None'};
+var $author$project$Pages$Upload$StateLoading = {$: 'StateLoading'};
 var $author$project$Pages$Upload$GotPauseResult = function (a) {
 	return {$: 'GotPauseResult', a: a};
 };
@@ -6569,6 +6570,30 @@ var $author$project$Pages$Upload$getPause = function (session) {
 		$author$project$Pages$Upload$GotPauseResult,
 		$author$project$Pages$Upload$pauseDecoder);
 };
+var $author$project$Pages$Upload$GotDcsStateResult = function (a) {
+	return {$: 'GotDcsStateResult', a: a};
+};
+var $author$project$Api$Endpoint$dcs = A2(
+	$author$project$Api$Endpoint$url,
+	_List_fromArray(
+		['admin', 'dcs']),
+	_List_Nil);
+var $author$project$Pages$Upload$Running = {$: 'Running'};
+var $author$project$Pages$Upload$Stopped = {$: 'Stopped'};
+var $author$project$Pages$Upload$serviceStateDecoder = A2(
+	$elm$json$Json$Decode$map,
+	function (x) {
+		return (x === 'running') ? $author$project$Pages$Upload$Running : $author$project$Pages$Upload$Stopped;
+	},
+	A2($elm$json$Json$Decode$field, 'status', $elm$json$Json$Decode$string));
+var $author$project$Pages$Upload$refreshDcsState = function (session) {
+	return A4(
+		$author$project$Api$getSecure,
+		$author$project$Pages$Upload$sessUser(session),
+		$author$project$Api$Endpoint$dcs,
+		$author$project$Pages$Upload$GotDcsStateResult,
+		$author$project$Pages$Upload$serviceStateDecoder);
+};
 var $author$project$Pages$Upload$GotCurrentMissionResult = function (a) {
 	return {$: 'GotCurrentMissionResult', a: a};
 };
@@ -6619,6 +6644,22 @@ var $author$project$Pages$Upload$refreshMissions = function (session) {
 		$author$project$Pages$Upload$GotMissionResult,
 		$elm$json$Json$Decode$list($author$project$Pages$Upload$missionListEntryDecoder));
 };
+var $author$project$Pages$Upload$GotSrsStateResult = function (a) {
+	return {$: 'GotSrsStateResult', a: a};
+};
+var $author$project$Api$Endpoint$srs = A2(
+	$author$project$Api$Endpoint$url,
+	_List_fromArray(
+		['admin', 'srs']),
+	_List_Nil);
+var $author$project$Pages$Upload$refreshSrsState = function (session) {
+	return A4(
+		$author$project$Api$getSecure,
+		$author$project$Pages$Upload$sessUser(session),
+		$author$project$Api$Endpoint$srs,
+		$author$project$Pages$Upload$GotSrsStateResult,
+		$author$project$Pages$Upload$serviceStateDecoder);
+};
 var $author$project$Pages$Upload$GotTacViewResult = function (a) {
 	return {$: 'GotTacViewResult', a: a};
 };
@@ -6637,14 +6678,16 @@ var $author$project$Pages$Upload$refreshTacViews = function (session) {
 };
 var $author$project$Pages$Upload$init = function (session) {
 	return _Utils_Tuple2(
-		{currentMission: $author$project$Pages$Upload$Loading, file: $author$project$Pages$Upload$None, missions: $author$project$Pages$Upload$Loading, paused: false, session: session, tacViews: $author$project$Pages$Upload$Loading},
+		{currentMission: $author$project$Pages$Upload$Loading, dcsStatus: $author$project$Pages$Upload$StateLoading, file: $author$project$Pages$Upload$None, missions: $author$project$Pages$Upload$Loading, paused: false, session: session, srsStatus: $author$project$Pages$Upload$StateLoading, tacViews: $author$project$Pages$Upload$Loading},
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
 				[
 					$author$project$Pages$Upload$refreshMissions(session),
 					$author$project$Pages$Upload$refreshTacViews(session),
 					$author$project$Pages$Upload$refreshMission(session),
-					$author$project$Pages$Upload$getPause(session)
+					$author$project$Pages$Upload$getPause(session),
+					$author$project$Pages$Upload$refreshDcsState(session),
+					$author$project$Pages$Upload$refreshSrsState(session)
 				])));
 };
 var $elm$browser$Browser$Navigation$load = _Browser_load;
@@ -7380,6 +7423,12 @@ var $author$project$Pages$Upload$GotEmptyResult = function (a) {
 var $author$project$Pages$Upload$GotPauseChangeResult = function (a) {
 	return {$: 'GotPauseChangeResult', a: a};
 };
+var $author$project$Pages$Upload$GotRestartDcsResult = function (a) {
+	return {$: 'GotRestartDcsResult', a: a};
+};
+var $author$project$Pages$Upload$GotRestartSrsResult = function (a) {
+	return {$: 'GotRestartSrsResult', a: a};
+};
 var $author$project$Pages$Upload$GotUploadResult = function (a) {
 	return {$: 'GotUploadResult', a: a};
 };
@@ -7393,6 +7442,7 @@ var $author$project$Pages$Upload$RefreshPause = {$: 'RefreshPause'};
 var $author$project$Pages$Upload$Selected = function (a) {
 	return {$: 'Selected', a: a};
 };
+var $author$project$Pages$Upload$StateError = {$: 'StateError'};
 var $author$project$Pages$Upload$Success = {$: 'Success'};
 var $author$project$Pages$Upload$UpdateFile = function (a) {
 	return {$: 'UpdateFile', a: a};
@@ -7746,10 +7796,87 @@ var $author$project$Pages$Upload$update = F2(
 				return _Utils_Tuple2(
 					model,
 					A2($andrewMacmurray$elm_delay$Delay$after, 500, $author$project$Pages$Upload$RefreshPause));
-			default:
+			case 'RefreshPause':
 				return _Utils_Tuple2(
 					model,
 					$author$project$Pages$Upload$getPause(model.session));
+			case 'ClickedRefreshStates':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{dcsStatus: $author$project$Pages$Upload$StateLoading, srsStatus: $author$project$Pages$Upload$StateLoading}),
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								$author$project$Pages$Upload$refreshSrsState(model.session),
+								$author$project$Pages$Upload$refreshDcsState(model.session)
+							])));
+			case 'GotDcsStateResult':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var status = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{dcsStatus: status}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{dcsStatus: $author$project$Pages$Upload$StateError}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'GotSrsStateResult':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var status = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{srsStatus: status}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{srsStatus: $author$project$Pages$Upload$StateError}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'ClickedRestartDcs':
+				return _Utils_Tuple2(
+					model,
+					A5(
+						$author$project$Api$postSecureWithErrorBody,
+						$author$project$Pages$Upload$sessionUser(model),
+						$author$project$Api$Endpoint$dcs,
+						$author$project$Pages$Upload$GotRestartDcsResult,
+						$elm$http$Http$emptyBody,
+						$elm$json$Json$Decode$succeed(_Utils_Tuple0)));
+			case 'ClickedRestartSrs':
+				return _Utils_Tuple2(
+					model,
+					A5(
+						$author$project$Api$postSecureWithErrorBody,
+						$author$project$Pages$Upload$sessionUser(model),
+						$author$project$Api$Endpoint$srs,
+						$author$project$Pages$Upload$GotRestartSrsResult,
+						$elm$http$Http$emptyBody,
+						$elm$json$Json$Decode$succeed(_Utils_Tuple0)));
+			case 'GotRestartDcsResult':
+				var result = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{dcsStatus: $author$project$Pages$Upload$StateLoading}),
+					$author$project$Pages$Upload$refreshDcsState(model.session));
+			default:
+				var result = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{srsStatus: $author$project$Pages$Upload$StateLoading}),
+					$author$project$Pages$Upload$refreshSrsState(model.session));
 		}
 	});
 var $author$project$Util$updateWith = F3(
@@ -8189,7 +8316,10 @@ var $author$project$Pages$NotFound$view = {
 };
 var $author$project$Pages$Upload$ClickedPause = {$: 'ClickedPause'};
 var $author$project$Pages$Upload$ClickedRefreshMissions = {$: 'ClickedRefreshMissions'};
+var $author$project$Pages$Upload$ClickedRefreshStates = {$: 'ClickedRefreshStates'};
 var $author$project$Pages$Upload$ClickedRefreshTac = {$: 'ClickedRefreshTac'};
+var $author$project$Pages$Upload$ClickedRestartDcs = {$: 'ClickedRestartDcs'};
+var $author$project$Pages$Upload$ClickedRestartSrs = {$: 'ClickedRestartSrs'};
 var $author$project$Pages$Upload$ClickedSelectFile = {$: 'ClickedSelectFile'};
 var $author$project$Pages$Upload$ClickedUpload = function (a) {
 	return {$: 'ClickedUpload', a: a};
@@ -8350,6 +8480,35 @@ var $author$project$Pages$Upload$viewRefreshButton = function (message) {
 					]))
 			]));
 };
+var $author$project$Pages$Upload$viewRestartButton = function (message) {
+	return A2(
+		$elm$html$Html$button,
+		_List_fromArray(
+			[
+				$elm$html$Html$Attributes$class('button button-secondary icon-button'),
+				$elm$html$Html$Events$onClick(message)
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$elm$html$Html$i,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('fas fa-power-off')
+					]),
+				_List_Nil),
+				A2(
+				$elm$html$Html$span,
+				_List_fromArray(
+					[
+						$elm$html$Html$Attributes$class('label')
+					]),
+				_List_fromArray(
+					[
+						$elm$html$Html$text('Restart')
+					]))
+			]));
+};
 var $author$project$Pages$Upload$viewTacView = function (tv) {
 	return A2(
 		$elm$html$Html$div,
@@ -8373,17 +8532,17 @@ var $author$project$Pages$Upload$view = function (model) {
 	var pauseText = model.paused ? 'Play' : 'Pause';
 	var pauseClass = model.paused ? 'fas fa-play' : 'fas fa-pause';
 	var errorCss = function () {
-		var _v7 = model.file;
-		if (_v7.$ === 'Error') {
+		var _v9 = model.file;
+		if (_v9.$ === 'Error') {
 			return ' form-field-input-container-error';
 		} else {
 			return '';
 		}
 	}();
 	var currentMission = function () {
-		var _v6 = model.currentMission;
-		if (_v6.$ === 'Loaded') {
-			var s = _v6.a;
+		var _v8 = model.currentMission;
+		if (_v8.$ === 'Loaded') {
+			var s = _v8.a;
 			return s.filename;
 		} else {
 			return '';
@@ -8409,6 +8568,146 @@ var $author$project$Pages$Upload$view = function (model) {
 							]),
 						_List_fromArray(
 							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$id('services')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$div,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('split')
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$h3,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text('Service States')
+													])),
+												$author$project$Pages$Upload$viewRefreshButton($author$project$Pages$Upload$ClickedRefreshStates)
+											])),
+										A2(
+										$elm$html$Html$div,
+										_List_Nil,
+										function () {
+											var _v0 = model.dcsStatus;
+											switch (_v0.$) {
+												case 'StateLoading':
+													return _List_fromArray(
+														[
+															$author$project$Util$viewLoadingWithMsg('Loading DCS Status')
+														]);
+												case 'Running':
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$div,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('split')
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('DCS Running'),
+																	$author$project$Pages$Upload$viewRestartButton($author$project$Pages$Upload$ClickedRestartDcs)
+																]))
+														]);
+												case 'Stopped':
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$div,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('split')
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('DCS Stopped'),
+																	$author$project$Pages$Upload$viewRestartButton($author$project$Pages$Upload$ClickedRestartDcs)
+																]))
+														]);
+												default:
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$div,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('split')
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('Error Loading DCS Status')
+																]))
+														]);
+											}
+										}()),
+										A2(
+										$elm$html$Html$div,
+										_List_Nil,
+										function () {
+											var _v1 = model.srsStatus;
+											switch (_v1.$) {
+												case 'StateLoading':
+													return _List_fromArray(
+														[
+															$author$project$Util$viewLoadingWithMsg('Loading SRS Status')
+														]);
+												case 'Running':
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$div,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('split')
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('SRS Running'),
+																	$author$project$Pages$Upload$viewRestartButton($author$project$Pages$Upload$ClickedRestartSrs)
+																]))
+														]);
+												case 'Stopped':
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$div,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('split')
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('SRS Stopped'),
+																	$author$project$Pages$Upload$viewRestartButton($author$project$Pages$Upload$ClickedRestartSrs)
+																]))
+														]);
+												default:
+													return _List_fromArray(
+														[
+															A2(
+															$elm$html$Html$div,
+															_List_fromArray(
+																[
+																	$elm$html$Html$Attributes$class('split')
+																]),
+															_List_fromArray(
+																[
+																	$elm$html$Html$text('Error Loading SRS Status')
+																]))
+														]);
+											}
+										}())
+									])),
 								A2(
 								$elm$html$Html$div,
 								_List_fromArray(
@@ -8474,15 +8773,15 @@ var $author$project$Pages$Upload$view = function (model) {
 										$elm$html$Html$div,
 										_List_Nil,
 										function () {
-											var _v0 = model.currentMission;
-											switch (_v0.$) {
+											var _v2 = model.currentMission;
+											switch (_v2.$) {
 												case 'Loading':
 													return _List_fromArray(
 														[
 															$author$project$Util$viewLoadingWithMsg('Loading Current Mission')
 														]);
 												case 'Loaded':
-													var mis = _v0.a;
+													var mis = _v2.a;
 													return _List_fromArray(
 														[
 															A2(
@@ -8504,7 +8803,7 @@ var $author$project$Pages$Upload$view = function (model) {
 																]))
 														]);
 												default:
-													var err = _v0.a;
+													var err = _v2.a;
 													return _List_fromArray(
 														[
 															A2(
@@ -8534,9 +8833,9 @@ var $author$project$Pages$Upload$view = function (model) {
 												$elm$html$Html$text('Upload Mission File')
 											])),
 									function () {
-										var _v1 = model.file;
-										if (_v1.$ === 'Uploading') {
-											var file = _v1.a;
+										var _v3 = model.file;
+										if (_v3.$ === 'Uploading') {
+											var file = _v3.a;
 											return _List_fromArray(
 												[
 													$author$project$Util$viewLoadingWithMsg(
@@ -8587,10 +8886,10 @@ var $author$project$Pages$Upload$view = function (model) {
 																	]))
 															]),
 														function () {
-															var _v2 = model.file;
-															switch (_v2.$) {
+															var _v4 = model.file;
+															switch (_v4.$) {
 																case 'Selected':
-																	var file = _v2.a;
+																	var file = _v4.a;
 																	return _List_fromArray(
 																		[
 																			A2(
@@ -8606,7 +8905,7 @@ var $author$project$Pages$Upload$view = function (model) {
 																				]))
 																		]);
 																case 'Uploading':
-																	var file = _v2.a;
+																	var file = _v4.a;
 																	return _List_fromArray(
 																		[
 																			A2(
@@ -8639,12 +8938,12 @@ var $author$project$Pages$Upload$view = function (model) {
 													$elm$html$Html$div,
 													_List_Nil,
 													function () {
-														var _v3 = model.file;
-														switch (_v3.$) {
+														var _v5 = model.file;
+														switch (_v5.$) {
 															case 'None':
 																return _List_Nil;
 															case 'Selected':
-																var file = _v3.a;
+																var file = _v5.a;
 																return _List_fromArray(
 																	[
 																		A2(
@@ -8661,14 +8960,14 @@ var $author$project$Pages$Upload$view = function (model) {
 																			]))
 																	]);
 															case 'Uploading':
-																var file = _v3.a;
+																var file = _v5.a;
 																return _List_fromArray(
 																	[
 																		$author$project$Util$viewLoadingWithMsg(
 																		'Uploading file ' + $elm$file$File$name(file))
 																	]);
 															case 'Error':
-																var error = _v3.a;
+																var error = _v5.a;
 																return _List_fromArray(
 																	[
 																		A2(
@@ -8725,21 +9024,21 @@ var $author$project$Pages$Upload$view = function (model) {
 										$elm$html$Html$div,
 										_List_Nil,
 										function () {
-											var _v4 = model.missions;
-											switch (_v4.$) {
+											var _v6 = model.missions;
+											switch (_v6.$) {
 												case 'Loading':
 													return _List_fromArray(
 														[
 															$author$project$Util$viewLoadingWithMsg('Loading Mission files')
 														]);
 												case 'Loaded':
-													var missions = _v4.a;
+													var missions = _v6.a;
 													return A2(
 														$elm$core$List$map,
 														$author$project$Pages$Upload$viewMission(currentMission),
 														missions);
 												default:
-													var err = _v4.a;
+													var err = _v6.a;
 													return _List_fromArray(
 														[
 															A2(
@@ -8824,21 +9123,21 @@ var $author$project$Pages$Upload$view = function (model) {
 										$elm$html$Html$div,
 										_List_Nil,
 										function () {
-											var _v5 = model.tacViews;
-											switch (_v5.$) {
+											var _v7 = model.tacViews;
+											switch (_v7.$) {
 												case 'Loading':
 													return _List_fromArray(
 														[
 															$author$project$Util$viewLoadingWithMsg('Loading TacView Files')
 														]);
 												case 'Loaded':
-													var tacViews = _v5.a;
+													var tacViews = _v7.a;
 													return A2(
 														$elm$core$List$map,
 														$author$project$Pages$Upload$viewTacView,
 														$elm$core$List$reverse(tacViews));
 												default:
-													var err = _v5.a;
+													var err = _v7.a;
 													return _List_fromArray(
 														[
 															A2(

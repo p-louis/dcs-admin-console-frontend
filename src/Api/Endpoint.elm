@@ -111,3 +111,11 @@ unpause =
 tacview : Endpoint
 tacview =
     url [ "admin", "tacview" ] []
+
+dcs : Endpoint
+dcs =
+    url [ "admin", "dcs" ] []
+
+srs : Endpoint
+srs =
+    url [ "admin", "srs" ] []

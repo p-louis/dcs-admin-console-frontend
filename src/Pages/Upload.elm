@@ -26,6 +26,11 @@ filenameDecoder =
     Decode.map FileName
         (Decode.field "filename" Decode.string)
 
+serviceStateDecoder : Decoder ServiceState
+serviceStateDecoder =
+    Decode.map (\x -> if x == "running" then Running else Stopped)
+        (Decode.field "status" Decode.string)
+
 missionListEntryDecoder : Decoder MissionListEntry
 missionListEntryDecoder =
     Decode.map2 MissionListEntry
@@ -36,6 +41,12 @@ type Status t
   = Loading
   | Loaded t
   | LoadError String
+
+type ServiceState
+  = Stopped
+  | Running
+  | StateLoading
+  | StateError
 
 type Selection
   = None
@@ -51,6 +62,8 @@ type alias Model =
   , missions: Status (List MissionListEntry)
   , tacViews: Status (List FileName)
   , currentMission: Status FileName
+  , dcsStatus: ServiceState
+  , srsStatus: ServiceState
   }
 
 type alias Pause =
@@ -78,7 +91,14 @@ type UploadMsg
     | ClickedPause
     | RefreshPause
     | ClickedRefreshMissions
+    | ClickedRefreshStates
+    | ClickedRestartDcs
+    | ClickedRestartSrs
     | GotUploadResult (Result Http.Error ())
+    | GotRestartDcsResult (Result Http.Error ())
+    | GotRestartSrsResult (Result Http.Error ())
+    | GotDcsStateResult (Result Http.Error ServiceState)
+    | GotSrsStateResult (Result Http.Error ServiceState)
     | GotPauseResult (Result Http.Error Pause)
     | GotEmptyResult (Result Http.Error ())
     | GotPauseChangeResult (Result Http.Error ())
@@ -95,12 +115,16 @@ init session =
   , missions = Loading
   , tacViews = Loading
   , currentMission = Loading
+  , dcsStatus = StateLoading
+  , srsStatus = StateLoading
   }
   , Cmd.batch
     [ refreshMissions session
     , refreshTacViews session
     , refreshMission session
     , getPause session
+    , refreshDcsState session
+    , refreshSrsState session
     ]
   )
 
@@ -119,6 +143,15 @@ refreshMission session =
 refreshTacViews : Session -> Cmd UploadMsg
 refreshTacViews session =
   Api.getSecure (sessUser session) Endpoint.tacview GotTacViewResult (Decode.list filenameDecoder)
+
+refreshDcsState : Session -> Cmd UploadMsg
+refreshDcsState session =
+  Api.getSecure (sessUser session) Endpoint.dcs GotDcsStateResult serviceStateDecoder
+
+refreshSrsState : Session -> Cmd UploadMsg
+refreshSrsState session =
+  Api.getSecure (sessUser session) Endpoint.srs GotSrsStateResult serviceStateDecoder
+
 -- Update
 sessionUser : Model -> User
 sessionUser model = sessUser model.session
@@ -252,6 +285,60 @@ update msg model =
       RefreshPause ->
         ( model, getPause model.session)
 
+      ClickedRefreshStates ->
+        ( { model | srsStatus = StateLoading, dcsStatus = StateLoading }
+        , Cmd.batch
+          [ refreshSrsState model.session
+          , refreshDcsState model.session
+          ]
+        )
+
+      GotDcsStateResult result ->
+        case result of
+          Ok status ->
+            ( { model | dcsStatus = status }
+            , Cmd.none
+            )
+
+          Err _ ->
+            ( { model | dcsStatus = StateError }
+            , Cmd.none
+            )
+
+      GotSrsStateResult result ->
+        case result of
+          Ok status ->
+            ( { model | srsStatus = status }
+            , Cmd.none
+            )
+
+          Err _ ->
+            ( { model | srsStatus = StateError }
+            , Cmd.none
+            )
+
+      ClickedRestartDcs ->
+        ( model
+        , Api.postSecureWithErrorBody (sessionUser model) Endpoint.dcs GotRestartDcsResult emptyBody (Decode.succeed ())
+        )
+
+      ClickedRestartSrs ->
+        ( model
+        , Api.postSecureWithErrorBody (sessionUser model) Endpoint.srs GotRestartSrsResult emptyBody (Decode.succeed ())
+        )
+
+      GotRestartDcsResult result ->
+        ( { model | dcsStatus = StateLoading }
+        , refreshDcsState model.session
+        )
+
+
+      GotRestartSrsResult result ->
+        ( { model | srsStatus = StateLoading }
+        , refreshSrsState model.session
+        )
+
+
 
 -- Subscriptions
 subscriptions : Model -> Sub UploadMsg
@@ -278,7 +365,61 @@ view model =
     , body =
         [ div [ id "gate" ]
           [ div [ id "mission-stuff" ]
-            [ div [ id "current-mission" ]
+            [ div [ id "services" ]
+              [ div [class "split"]
+                [ h3 [] [ text "Service States" ]
+                , viewRefreshButton ClickedRefreshStates
+                ]
+              , div []
+                <| case model.dcsStatus of
+                  StateLoading ->
+                    [ viewLoadingWithMsg "Loading DCS Status" ]
+
+                  Running ->
+                    [ div [ class "split" ]
+                      [ text "DCS Running"
+                      , viewRestartButton ClickedRestartDcs
+                      ]
+                    ]
+
+                  Stopped ->
+                    [ div [ class "split" ]
+                      [ text "DCS Stopped"
+                      , viewRestartButton ClickedRestartDcs
+                      ]
+                    ]
+
+                  StateError ->
+                    [ div [ class "split" ]
+                      [ text "Error Loading DCS Status"
+                      ]
+                    ]
+              , div []
+                <| case model.srsStatus of
+                  StateLoading ->
+                    [ viewLoadingWithMsg "Loading SRS Status" ]
+
+                  Running ->
+                    [ div [ class "split" ]
+                      [ text "SRS Running"
+                      , viewRestartButton ClickedRestartSrs
+                      ]
+                    ]
+
+                  Stopped ->
+                    [ div [ class "split" ]
+                      [ text "SRS Stopped"
+                      , viewRestartButton ClickedRestartSrs
+                      ]
+                    ]
+
+                  StateError ->
+                    [ div [ class "split" ]
+                      [ text "Error Loading SRS Status"
+                      ]
+                    ]
+              ]
+            , div [ id "current-mission" ]
               [ div [class "split"]
                 [ h3 [] [ text "Current Mission" ]
                 , div [ class "button-group" ]
@@ -420,6 +561,16 @@ viewRefreshButton message =
     ]
     [ i [ class "fas fa-sync-alt" ] []
     , span [ class "label" ] [ text "Refresh" ]
+    ]
+
+viewRestartButton : msg -> Html msg
+viewRestartButton message =
+  button
+    [ class "button button-secondary icon-button"
+    , onClick message
+    ]
+    [ i [ class "fas fa-power-off" ] []
+    , span [ class "label" ] [ text "Restart" ]
     ]
 
 viewMission : String -> MissionListEntry -> Html UploadMsg
